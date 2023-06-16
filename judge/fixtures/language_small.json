@@ -12,39 +12,8 @@
             "template": "",
             "info": "",
             "description": "",
-            "extension": "py"
-        }
-    },
-    {
-        "model": "judge.language",
-        "pk": 2,
-        "fields": {
-            "key": "GAS64",
-            "name": "Assembly (x64)",
-            "short_name": null,
-            "common_name": "Assembly",
-            "ace": "assembly_x86",
-            "pygments": "gas",
-            "template": "",
-            "info": "",
-            "description": "",
-            "extension": "asm"
-        }
-    },
-    {
-        "model": "judge.language",
-        "pk": 3,
-        "fields": {
-            "key": "AWK",
-            "name": "AWK",
-            "short_name": "AWK",
-            "common_name": "Awk",
-            "ace": "AWK",
-            "pygments": "awk",
-            "template": "",
-            "info": "",
-            "description": "",
-            "extension": "awk"
+            "extension": "py",
+            "include_in_problem": true
         }
     },
     {
@@ -60,7 +29,8 @@
             "template": "",
             "info": "",
             "description": "Compile options: `gcc -std=c99 -Wall -DONLINE_JUDGE -O2 -lm -fmax-errors=5 -march=native -s`",
-            "extension": "c"
+            "extension": "c",
+            "include_in_problem": true
         }
     },
     {
@@ -76,7 +46,8 @@
             "template": "",
             "info": "",
             "description": "Compile options: `g++ -Wall -DONLINE_JUDGE -O2 -lm -fmax-errors=5 -march=native -s`",
-            "extension": "cpp"
+            "extension": "cpp",
+            "include_in_problem": true
         }
     },
     {
@@ -92,23 +63,8 @@
             "template": "",
             "info": "",
             "description": "Compile options: `g++ -std=c++11 -Wall -DONLINE_JUDGE -O2 -lm -fmax-errors=5 -march=native -s`",
-            "extension": "cpp"
-        }
-    },
-    {
-        "model": "judge.language",
-        "pk": 7,
-        "fields": {
-            "key": "PERL",
-            "name": "Perl",
-            "short_name": null,
-            "common_name": "Perl",
-            "ace": "perl",
-            "pygments": "perl",
-            "template": "",
-            "info": "",
-            "description": "",
-            "extension": "pl"
+            "extension": "cpp",
+            "include_in_problem": true
         }
     },
     {
@@ -124,7 +80,8 @@
             "template": "",
             "info": "",
             "description": "",
-            "extension": "py"
+            "extension": "py",
+            "include_in_problem": true
         }
     },
     {
@@ -140,55 +97,27 @@
             "template": "",
             "info": "",
             "description": "Compile options: `javac -encoding UTF-8 -profile compact1`",
-            "extension": "java"
-        }
-    },
-    {
-        "model": "judge.language",
-        "pk": 10,
-        "fields": {
-            "key": "TEXT",
-            "name": "Text",
-            "short_name": null,
-            "common_name": "Text",
-            "ace": "text",
-            "pygments": "text",
-            "template": "",
-            "info": "",
-            "description": "",
-            "extension": "txt"
-        }
-    },
-    {
-        "model": "judge.language",
-        "pk": 11,
-        "fields": {
-            "key": "GAS32",
-            "name": "Assembly (x86)",
-            "short_name": null,
-            "common_name": "Assembly",
-            "ace": "assembly_x86",
-            "pygments": "gas",
-            "template": "",
-            "info": "",
-            "description": "",
-            "extension": "asm"
+            "extension": "java",
+            "include_in_problem": true
         }
     },
     {
         "model": "judge.language",
         "pk": 12,
         "fields": {
-            "key": "SED",
-            "name": "Sed",
+            "key": "SCRATCH",
+            "name": "Scratch",
             "short_name": null,
-            "common_name": "Sed",
-            "ace": "perl",
-            "pygments": "perl",
+            "common_name": "Scratch",
+            "ace": "text",
+            "pygments": "text",
             "template": "",
             "info": "",
-            "description": "",
-            "extension": "sed"
+            "description": "Check options: `scratch-run --check`",
+            "extension": "sb3",
+            "file_only": true,
+            "file_size_limit": 1,
+            "include_in_problem": true
         }
     },
     {
@@ -204,7 +133,8 @@
             "template": "",
             "info": "",
             "description": "Compile options: `g++ -std=c++14 -Wall -DONLINE_JUDGE -O2 -lm -fmax-errors=5 -march=native -s`",
-            "extension": "cpp"
+            "extension": "cpp",
+            "include_in_problem": true
         }
     },
     {
@@ -220,7 +150,8 @@
             "template": "",
             "info": "",
             "description": "",
-            "extension": "pas"
+            "extension": "pas",
+            "include_in_problem": true
         }
     },
     {
@@ -236,7 +167,8 @@
             "template": "",
             "info": "",
             "description": "Compile options: `g++ -std=c++17 -Wall -DONLINE_JUDGE -O2 -lm -fmax-errors=5 -march=native -s`",
-            "extension": "cpp"
+            "extension": "cpp",
+            "include_in_problem": true
         }
     },
     {
@@ -252,23 +184,8 @@
             "template": "",
             "info": "",
             "description": "Compile options: `gcc -std=c11 -Wall -DONLINE_JUDGE -O2 -lm -fmax-errors=5 -march=native -s`",
-            "extension": "c"
-        }
-    },
-    {
-        "model": "judge.language",
-        "pk": 17,
-        "fields": {
-            "key": "BF",
-            "name": "Brain****",
-            "short_name": null,
-            "common_name": "Brain****",
-            "ace": "plain_text",
-            "pygments": "bf",
-            "template": "",
-            "info": "",
-            "description": "Classical [brain\\*\\*\\*\\*][1] with as many byte-sized cells as there are bytes in the memory limit.\r\n\r\n  [1]: http://www.muppetlabs.com/~breadbox/bf/",
-            "extension": "c"
+            "extension": "c",
+            "include_in_problem": true
         }
     },
     {
@@ -284,7 +201,8 @@
             "template": "",
             "info": "",
             "description": "Compile options: `g++ -std=c++20 -Wall -DONLINE_JUDGE -O2 -lm -fmax-errors=5 -march=native -s`",
-            "extension": "cpp"
+            "extension": "cpp",
+            "include_in_problem": true
         }
     }
 ]

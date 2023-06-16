@@ -42,7 +42,7 @@ register_patterns = [
          RegistrationView.as_view(),
          name='registration_register'),
     path('register/complete/',
-         TitledTemplateView.as_view(template_name='registration/registration_complete.html',
+         TitledTemplateView.as_view(template_name='registration/activation_complete.html',
                                     title=_('Registration Completed')),
          name='registration_complete'),
     path('register/closed/',

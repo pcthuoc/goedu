@@ -49,7 +49,7 @@ class CustomRegistrationForm(RegistrationForm):
             domain = self.cleaned_data['email'].split('@')[-1].lower()
             if (domain in settings.BAD_MAIL_PROVIDERS or
                     any(regex.match(domain) for regex in bad_mail_regex)):
-                raise forms.ValidationError(gettext('Your email provider is not allowed due to history of abuse. '
+                raise forms.ValidationError(gettext('Your eail provider is not allowed due to history of abuse. '
                                                     'Please use a reputable email provider.'))
         return self.cleaned_data['email']
 
@@ -87,10 +87,10 @@ class RegistrationView(OldRegistrationView):
         profile.timezone = cleaned_data['timezone']
         profile.language = cleaned_data['language']
         profile.organizations.add(*cleaned_data['organizations'])
-
-        with transaction.atomic():
-            user.save()
-            profile.save()
+        user.is_active = True
+        profile.activated = True
+        user.save()
+        profile.save()
 
         if newsletter_id is not None and cleaned_data['newsletter']:
             Subscription(user=user, newsletter_id=newsletter_id, subscribed=True).save()
