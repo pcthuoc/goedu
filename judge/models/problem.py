@@ -186,7 +186,7 @@ class Problem(models.Model):
     ac_rate = models.FloatField(verbose_name=_('solve rate'), default=0)
     is_full_markup = models.BooleanField(verbose_name=_('allow full markdown access'), default=False)
     submission_source_visibility_mode = models.CharField(verbose_name=_('submission source visibility'), max_length=1,
-                                                         default=SubmissionSourceAccess.FOLLOW,
+                                                         default=SubmissionSourceAccess.ONLY_OWN,
                                                          choices=SUBMISSION_SOURCE_ACCESS)
     testcase_visibility_mode = models.CharField(verbose_name=_('Testcase visibility'), max_length=1,
                                                 default=ProblemTestcaseAccess.OUT_CONTEST,
