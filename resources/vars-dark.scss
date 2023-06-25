@@ -13,6 +13,9 @@ $color_primary75: #90a4ae;     // widget
 $color_primary90: #b0bec5;
 $color_primary100: #cfd8dc;
 
+
+$color_nav_list: $color_primary5;  // navbar
+
 $color_link50: #009688;    // default (title)
 $color_link75: #039be5;    // default
 $color_link100: #4fc3f7;   // hover
@@ -49,6 +52,8 @@ $color_user_submission_activity4: #43a047;
 $color_pagination_hover: $color_primary33;
 
 $color_problem_submit_select2: #8a8a8a;
+
+$color_score_ac: #69f0ae;
 
 $path_to_root: '..';    // relative path from style.css to STATIC_ROOT
 
