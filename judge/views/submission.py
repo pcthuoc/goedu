@@ -372,6 +372,7 @@ class SubmissionsListBase(DiggPaginatorMixin, TitleMixin, ListView):
     def get_context_data(self, **kwargs):
         context = super(SubmissionsListBase, self).get_context_data(**kwargs)
         authenticated = self.request.user.is_authenticated
+        context['now'] = timezone.now()
         context['dynamic_update'] = False
         context['dynamic_contest_id'] = self.in_contest and self.contest.id
         context['show_problem'] = self.show_problem
@@ -594,6 +595,7 @@ def single_submission(request):
         'show_problem': show_problem,
         'problem_name': show_problem and submission.problem.translated_name(request.LANGUAGE_CODE),
         'profile_id': request.profile.id if authenticated else 0,
+        'now': timezone.now(),
     })
 
 

@@ -51,10 +51,20 @@
 
     {% if can_view %}
         <div class="sub-prop"><div>
-            <a href="{{ url('submission_status', submission.id) }}">
-                <i class="fa-solid fa-eye fa-fw"></i><span class="label">{{ _('view') }}</span>
-            </a>
-            {% if perms.judge.rejudge_submission and can_edit %} ·
+ {% set time_difference = now - submission.date %}
+{% set is_within_2_days = time_difference.total_seconds() < (2 * 24 * 60 * 60) %}
+
+{% if is_within_2_days or can_edit %}
+        <a href="{{ url('submission_status', submission.id) }}">
+            <i class="fa-solid fa-eye fa-fw"></i><span class="label">{{ _('view') }}</span>
+        </a>
+  {% endif %}
+
+
+    
+
+
+            {% if perms.judge.rejudge_submission and can_edit %} 
                 {% if not submission.is_locked %}
                     <a href="#" onclick="rejudge_submission({{ submission.id }}, event);return false">
                         <i class="fa-solid fa-refresh fa-fw"></i><span class="label">{{ _('rejudge') }}</span>
@@ -67,7 +77,7 @@
                     </span>
                 {% endif %}
             {% endif %}
-            {% if can_edit %} ·
+            {% if can_edit %}
                 <a href="{{ url('problem_submission_diff', submission.problem.code) }}?username={{ submission.user.user.username }}&highlight={{ submission.id }}">
                     <i class="fa-solid fa-code-compare fa-fw"></i><span class="label">{{ _('diff') }}</span>
                 </a> ·
