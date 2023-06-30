@@ -157,7 +157,7 @@ urlpatterns = [
         path('/abort', submission.abort_submission, name='submission_abort'),
         path('/raw', submission.SubmissionSourceRaw.as_view(), name='submission_source_raw'),
         path('/src', submission.SubmissionSource.as_view(), name='submission_source'),
-        path('/download', submission.SubmissionSourceDownload.as_view(),name='submission_source_download'),
+        path('/download', submission.SubmissionSourceDownload.as_view(), name='submission_source_download'),
     ])),
 
     path('users/', include([
