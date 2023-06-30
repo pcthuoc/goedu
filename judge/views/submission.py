@@ -1,5 +1,5 @@
-import os
 import json
+import os
 from collections import namedtuple
 from itertools import groupby
 from operator import attrgetter
@@ -53,7 +53,9 @@ from judge.utils.problems import (
     user_tester_ids,
 )
 from judge.utils.raw_sql import join_sql_subquery, use_straight_join
+
 from judge.utils.views import DiggPaginatorMixin, TitleMixin, generic_message
+
 from judge.utils.views import (
     DiggPaginatorMixin,
     TitleMixin,
@@ -130,6 +132,7 @@ class SubmissionDetailBase(LoginRequiredMixin, TitleMixin, SubmissionMixin, Deta
             problem.is_accessible_by(self.request.user)
             and problem.submission_source_visibility == SubmissionSourceAccess.SOLVED
         ):
+
             message = escape(
                 _("Permission denied. Solve %(problem)s in order to view it.")
             ) % {
@@ -180,12 +183,14 @@ class SubmissionDetailBase(LoginRequiredMixin, TitleMixin, SubmissionMixin, Deta
 
 
 class SubmissionSource(SubmissionDetailBase):
+
     template_name = "submission/source.html"
 
     def get_queryset(self):
         return super().get_queryset().select_related("source")
 
     def get_object(self, queryset=None):
+
         submission = super().get_object(queryset)
         if submission.language.file_only and not self.request.user.is_superuser:
             raise SubmissionSourcePermissionDenied()
