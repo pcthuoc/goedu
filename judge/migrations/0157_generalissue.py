@@ -4,17 +4,24 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('judge', '0156_delete_self_votes'),
+        ("judge", "0156_delete_self_votes"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='GeneralIssue',
+            name="GeneralIssue",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('issue_url', models.URLField(verbose_name='Link to the issue')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("issue_url", models.URLField(verbose_name="Link to the issue")),
             ],
         ),
     ]

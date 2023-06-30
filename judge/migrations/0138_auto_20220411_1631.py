@@ -6,25 +6,33 @@ import judge.models.problem
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('judge', '0137_output_only'),
+        ("judge", "0137_output_only"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='problemclarification',
-            name='description',
-            field=models.TextField(validators=[judge.models.problem.disallowed_characters_validator], verbose_name='clarification body'),
+            model_name="problemclarification",
+            name="description",
+            field=models.TextField(
+                validators=[judge.models.problem.disallowed_characters_validator],
+                verbose_name="clarification body",
+            ),
         ),
         migrations.AlterField(
-            model_name='problemtranslation',
-            name='description',
-            field=models.TextField(validators=[judge.models.problem.disallowed_characters_validator], verbose_name='translated description'),
+            model_name="problemtranslation",
+            name="description",
+            field=models.TextField(
+                validators=[judge.models.problem.disallowed_characters_validator],
+                verbose_name="translated description",
+            ),
         ),
         migrations.AlterField(
-            model_name='solution',
-            name='content',
-            field=models.TextField(validators=[judge.models.problem.disallowed_characters_validator], verbose_name='editorial content'),
+            model_name="solution",
+            name="content",
+            field=models.TextField(
+                validators=[judge.models.problem.disallowed_characters_validator],
+                verbose_name="editorial content",
+            ),
         ),
     ]

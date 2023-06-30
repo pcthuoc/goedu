@@ -6,15 +6,18 @@ import judge.models.problem
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('judge', '0138_auto_20220411_1631'),
+        ("judge", "0138_auto_20220411_1631"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='solution',
-            name='content',
-            field=models.TextField(blank=True, validators=[judge.models.problem.disallowed_characters_validator], verbose_name='editorial content'),
+            model_name="solution",
+            name="content",
+            field=models.TextField(
+                blank=True,
+                validators=[judge.models.problem.disallowed_characters_validator],
+                verbose_name="editorial content",
+            ),
         ),
     ]

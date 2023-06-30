@@ -25,13 +25,13 @@ def get_resource(request):
     else:
         scheme = "http"
     return {
-        'INLINE_JQUERY': settings.INLINE_JQUERY,
-        'INLINE_FONTAWESOME': settings.INLINE_FONTAWESOME,
-        'JQUERY_JS': settings.JQUERY_JS,
-        'FONTAWESOME_CSS': settings.FONTAWESOME_CSS,
-        'DMOJ_SCHEME': scheme,
-        'DMOJ_CANONICAL': settings.DMOJ_CANONICAL,
-        'DMOJ_SELECT2_THEME': settings.DMOJ_SELECT2_THEME,
+        "INLINE_JQUERY": settings.INLINE_JQUERY,
+        "INLINE_FONTAWESOME": settings.INLINE_FONTAWESOME,
+        "JQUERY_JS": settings.JQUERY_JS,
+        "FONTAWESOME_CSS": settings.FONTAWESOME_CSS,
+        "DMOJ_SCHEME": scheme,
+        "DMOJ_CANONICAL": settings.DMOJ_CANONICAL,
+        "DMOJ_SELECT2_THEME": settings.DMOJ_SELECT2_THEME,
     }
 
 
@@ -130,14 +130,14 @@ def site_name(request):
 
 def site_theme(request):
     # Middleware populating `profile` may not have loaded at this point if we're called from an error context.
-    if hasattr(request.user, 'profile'):
+    if hasattr(request.user, "profile"):
         preferred_css = settings.DMOJ_THEME_CSS.get(request.profile.site_theme)
     else:
         preferred_css = None
     return {
-        'DARK_STYLE_CSS': settings.DMOJ_THEME_CSS['dark'],
-        'LIGHT_STYLE_CSS': settings.DMOJ_THEME_CSS['light'],
-        'PREFERRED_STYLE_CSS': preferred_css,
+        "DARK_STYLE_CSS": settings.DMOJ_THEME_CSS["dark"],
+        "LIGHT_STYLE_CSS": settings.DMOJ_THEME_CSS["light"],
+        "PREFERRED_STYLE_CSS": preferred_css,
     }
 
 
@@ -145,7 +145,7 @@ def math_setting(request):
     caniuse = CanIUse(request.META.get("HTTP_USER_AGENT", ""))
 
     # Middleware populating `profile` may not have loaded at this point if we're called from an error context.
-    if hasattr(request.user, 'profile'):
+    if hasattr(request.user, "profile"):
         engine = request.profile.math_engine
     else:
         engine = settings.MATHOID_DEFAULT_TYPE

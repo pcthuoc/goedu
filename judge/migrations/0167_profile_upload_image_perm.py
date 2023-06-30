@@ -4,14 +4,23 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('judge', '0166_dark_ace_theme'),
+        ("judge", "0166_dark_ace_theme"),
     ]
 
     operations = [
         migrations.AlterModelOptions(
-            name='profile',
-            options={'permissions': (('test_site', 'Shows in-progress development stuff'), ('totp', 'Edit TOTP settings'), ('high_problem_timelimit', 'Can set high problem timelimit'), ('long_contest_duration', 'Can set long contest duration'), ('upload_image_server', 'Can upload image to server')), 'verbose_name': 'user profile', 'verbose_name_plural': 'user profiles'},
+            name="profile",
+            options={
+                "permissions": (
+                    ("test_site", "Shows in-progress development stuff"),
+                    ("totp", "Edit TOTP settings"),
+                    ("high_problem_timelimit", "Can set high problem timelimit"),
+                    ("long_contest_duration", "Can set long contest duration"),
+                    ("upload_image_server", "Can upload image to server"),
+                ),
+                "verbose_name": "user profile",
+                "verbose_name_plural": "user profiles",
+            },
         ),
     ]

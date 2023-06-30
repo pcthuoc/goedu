@@ -4,15 +4,14 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('judge', '0131_solution_pdf_url'),
+        ("judge", "0131_solution_pdf_url"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='solution',
-            name='content',
-            field=models.TextField(blank=True, verbose_name='editorial content'),
+            model_name="solution",
+            name="content",
+            field=models.TextField(blank=True, verbose_name="editorial content"),
         ),
     ]

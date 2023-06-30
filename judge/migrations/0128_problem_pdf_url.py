@@ -4,15 +4,19 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('judge', '0127_auto_20220206_1438'),
+        ("judge", "0127_auto_20220206_1438"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='problem',
-            name='pdf_url',
-            field=models.CharField(blank=True, help_text='URL to PDF statement. The PDF file must be embeddable (Mobile web browsersmay not support embedding). Fallback included.', max_length=100, verbose_name='PDF statement URL'),
+            model_name="problem",
+            name="pdf_url",
+            field=models.CharField(
+                blank=True,
+                help_text="URL to PDF statement. The PDF file must be embeddable (Mobile web browsersmay not support embedding). Fallback included.",
+                max_length=100,
+                verbose_name="PDF statement URL",
+            ),
         ),
     ]

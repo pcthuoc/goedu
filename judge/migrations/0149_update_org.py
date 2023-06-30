@@ -4,23 +4,45 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('judge', '0148_organization_performance_points'),
+        ("judge", "0148_organization_performance_points"),
     ]
 
     operations = [
         migrations.AlterModelOptions(
-            name='organization',
-            options={'ordering': ['name'], 'permissions': (('organization_admin', 'Administer organizations'), ('edit_all_organization', 'Edit all organizations'), ('change_open_organization', 'Change is_open field'), ('spam_organization', 'Create organization without limit')), 'verbose_name': 'organization', 'verbose_name_plural': 'organizations'},
+            name="organization",
+            options={
+                "ordering": ["name"],
+                "permissions": (
+                    ("organization_admin", "Administer organizations"),
+                    ("edit_all_organization", "Edit all organizations"),
+                    ("change_open_organization", "Change is_open field"),
+                    ("spam_organization", "Create organization without limit"),
+                ),
+                "verbose_name": "organization",
+                "verbose_name_plural": "organizations",
+            },
         ),
         migrations.AlterModelOptions(
-            name='profile',
-            options={'permissions': (('test_site', 'Shows in-progress development stuff'), ('totp', 'Edit TOTP settings'), ('high_problem_timelimit', 'Can set high problem timelimit'), ('long_contest_duration', 'Can set long contest duration')), 'verbose_name': 'user profile', 'verbose_name_plural': 'user profiles'},
+            name="profile",
+            options={
+                "permissions": (
+                    ("test_site", "Shows in-progress development stuff"),
+                    ("totp", "Edit TOTP settings"),
+                    ("high_problem_timelimit", "Can set high problem timelimit"),
+                    ("long_contest_duration", "Can set long contest duration"),
+                ),
+                "verbose_name": "user profile",
+                "verbose_name_plural": "user profiles",
+            },
         ),
         migrations.AlterField(
-            model_name='organization',
-            name='is_open',
-            field=models.BooleanField(default=False, help_text='Allow joining organization', verbose_name='is open organization?'),
+            model_name="organization",
+            name="is_open",
+            field=models.BooleanField(
+                default=False,
+                help_text="Allow joining organization",
+                verbose_name="is open organization?",
+            ),
         ),
     ]

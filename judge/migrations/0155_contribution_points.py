@@ -4,20 +4,21 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('judge', '0154_contest_scoreboard_cache_timeout'),
+        ("judge", "0154_contest_scoreboard_cache_timeout"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='profile',
-            name='contribution_points',
+            model_name="profile",
+            name="contribution_points",
             field=models.IntegerField(db_index=True, default=0),
         ),
         migrations.AddField(
-            model_name='ticket',
-            name='is_contributive',
-            field=models.BooleanField(default=False, verbose_name='is ticket contributive?'),
+            model_name="ticket",
+            name="is_contributive",
+            field=models.BooleanField(
+                default=False, verbose_name="is ticket contributive?"
+            ),
         ),
     ]

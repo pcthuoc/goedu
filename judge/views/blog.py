@@ -5,8 +5,14 @@ from django.db import IntegrityError
 from django.db.models import Count, FilteredRelation, Max, Q
 from django.db.models.expressions import F, Value
 from django.db.models.functions import Coalesce
-from django.http import Http404, HttpResponse, HttpResponseBadRequest, HttpResponseForbidden, HttpResponseNotFound, \
-    HttpResponseRedirect
+from django.http import (
+    Http404,
+    HttpResponse,
+    HttpResponseBadRequest,
+    HttpResponseForbidden,
+    HttpResponseNotFound,
+    HttpResponseRedirect,
+)
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.translation import ugettext as _
@@ -16,8 +22,17 @@ from reversion import revisions
 from judge.comments import CommentedDetailView
 from judge.dblock import LockModel
 from judge.forms import BlogPostForm
-from judge.models import BlogPost, BlogVote, Comment, Contest, Language, Problem, Profile, Submission, \
-    Ticket
+from judge.models import (
+    BlogPost,
+    BlogVote,
+    Comment,
+    Contest,
+    Language,
+    Problem,
+    Profile,
+    Submission,
+    Ticket,
+)
 from judge.utils.cachedict import CacheDict
 from judge.utils.diggpaginator import DiggPaginator
 from judge.utils.opengraph import generate_opengraph
@@ -28,49 +43,64 @@ from judge.utils.views import TitleMixin, generic_message
 @login_required
 def vote_blog(request, delta):
     if abs(delta) != 1:
-        return HttpResponseBadRequest(_('Messing around, are we?'), content_type='text/plain')
+        return HttpResponseBadRequest(
+            _("Messing around, are we?"), content_type="text/plain"
+        )
 
-    if request.method != 'POST':
+    if request.method != "POST":
         return HttpResponseForbidden()
 
-    if 'id' not in request.POST or len(request.POST['id']) > 10:
+    if "id" not in request.POST or len(request.POST["id"]) > 10:
         return HttpResponseBadRequest()
 
     if not request.user.is_staff and not request.profile.has_any_solves:
-        return HttpResponseBadRequest(_('You must solve at least one problem before you can vote.'),
-                                      content_type='text/plain')
+        return HttpResponseBadRequest(
+            _("You must solve at least one problem before you can vote."),
+            content_type="text/plain",
+        )
 
     if request.profile.mute:
-        suffix_msg = '' if request.profile.ban_reason is None else _(' Reason: ') + request.profile.ban_reason
-        return HttpResponseBadRequest(_('Your part is silent, little toad.') + suffix_msg, content_type='text/plain')
+        suffix_msg = (
+            ""
+            if request.profile.ban_reason is None
+            else _(" Reason: ") + request.profile.ban_reason
+        )
+        return HttpResponseBadRequest(
+            _("Your part is silent, little toad.") + suffix_msg,
+            content_type="text/plain",
+        )
 
     try:
-        blog_id = int(request.POST['id'])
+        blog_id = int(request.POST["id"])
     except ValueError:
         return HttpResponseBadRequest()
 
     try:
         blog = BlogPost.objects.filter(id=blog_id).get()
     except BlogPost.DoesNotExist:
-        return HttpResponseNotFound(_('Blog post not found.'), content_type='text/plain')
+        return HttpResponseNotFound(
+            _("Blog post not found."), content_type="text/plain"
+        )
 
     if blog.authors.filter(id=request.profile.id).exists():
-        return HttpResponseBadRequest(_('You cannot vote your own blog'), content_type='text/plain')
+        return HttpResponseBadRequest(
+            _("You cannot vote your own blog"), content_type="text/plain"
+        )
 
     try:
         vote = BlogVote.objects.get(blog_id=blog_id, voter=request.profile)
-        if (vote.score != delta):
-            if (vote.score == 1):
+        if vote.score != delta:
+            if vote.score == 1:
                 BlogPost.objects.get(id=blog_id).vote(-2)
             else:
                 BlogPost.objects.get(id=blog_id).vote(2)
             vote.score = delta
             vote.save()
-            return HttpResponse('vote success', content_type='text/plain')
+            return HttpResponse("vote success", content_type="text/plain")
         else:
             BlogPost.objects.get(id=blog_id).vote(-delta)
             vote.delete()
-            return HttpResponse('unvote success', content_type='text/plain')
+            return HttpResponse("unvote success", content_type="text/plain")
     except BlogVote.DoesNotExist:
         pass
 
@@ -93,7 +123,7 @@ def vote_blog(request, delta):
         else:
             BlogPost.objects.get(id=blog_id).vote(delta)
         break
-    return HttpResponse('vote success', content_type='text/plain')
+    return HttpResponse("vote success", content_type="text/plain")
 
 
 def upvote_blog(request):
@@ -106,8 +136,8 @@ def downvote_blog(request):
 
 class BlogPostMixin(object):
     model = BlogPost
-    pk_url_kwarg = 'id'
-    slug_url_kwarg = 'slug'
+    pk_url_kwarg = "id"
+    slug_url_kwarg = "slug"
 
     def get_object(self, queryset=None):
         post = super(BlogPostMixin, self).get_object(queryset)
@@ -119,162 +149,206 @@ class BlogPostMixin(object):
 class PostListBase(ListView):
     model = BlogPost
     paginate_by = 10
-    context_object_name = 'posts'
+    context_object_name = "posts"
     title = None
 
-    def get_paginator(self, queryset, per_page, orphans=0,
-                      allow_empty_first_page=True, **kwargs):
-        return DiggPaginator(queryset, per_page, body=6, padding=2,
-                             orphans=orphans, allow_empty_first_page=allow_empty_first_page, **kwargs)
+    def get_paginator(
+        self, queryset, per_page, orphans=0, allow_empty_first_page=True, **kwargs
+    ):
+        return DiggPaginator(
+            queryset,
+            per_page,
+            body=6,
+            padding=2,
+            orphans=orphans,
+            allow_empty_first_page=allow_empty_first_page,
+            **kwargs,
+        )
 
     def get_queryset(self):
-        queryset = (BlogPost.objects.filter(visible=True, publish_on__lte=timezone.now())
-                    .prefetch_related('authors__user'))
+        queryset = BlogPost.objects.filter(
+            visible=True, publish_on__lte=timezone.now()
+        ).prefetch_related("authors__user")
         if self.request.user.is_authenticated:
             profile = self.request.profile
             queryset = queryset.annotate(
-                my_vote=FilteredRelation('votes', condition=Q(votes__voter_id=profile.id)),
-            ).annotate(vote_score=Coalesce(F('my_vote__score'), Value(0)))
+                my_vote=FilteredRelation(
+                    "votes", condition=Q(votes__voter_id=profile.id)
+                ),
+            ).annotate(vote_score=Coalesce(F("my_vote__score"), Value(0)))
         return queryset
 
     def get_context_data(self, **kwargs):
         context = super(PostListBase, self).get_context_data(**kwargs)
-        context['first_page_href'] = None
-        context['title'] = self.title or _('Page %d of Posts') % context['page_obj'].number
-        context['post_comment_counts'] = {
-            int(page[2:]): count for page, count in
-            Comment.objects
-                   .filter(page__in=['b:%d' % post.id for post in context['posts']], hidden=False)
-                   .values_list('page').annotate(count=Count('page')).order_by()
+        context["first_page_href"] = None
+        context["title"] = (
+            self.title or _("Page %d of Posts") % context["page_obj"].number
+        )
+        context["post_comment_counts"] = {
+            int(page[2:]): count
+            for page, count in Comment.objects.filter(
+                page__in=["b:%d" % post.id for post in context["posts"]], hidden=False
+            )
+            .values_list("page")
+            .annotate(count=Count("page"))
+            .order_by()
         }
         return context
 
 
 class PostList(PostListBase):
-    template_name = 'blog/list.html'
+    template_name = "blog/list.html"
     show_all_blogs = False
-    tab = 'home'
+    tab = "home"
 
     def get_queryset(self):
         queryset = super(PostList, self).get_queryset()
 
         queryset = queryset.filter(organization=None)
 
-        if 'show_all_blogs' in self.request.GET:
-            self.show_all_blogs = self.request.session['show_all_blogs'] = self.request.GET['show_all_blogs'] == 'true'
+        if "show_all_blogs" in self.request.GET:
+            self.show_all_blogs = self.request.session["show_all_blogs"] = (
+                self.request.GET["show_all_blogs"] == "true"
+            )
         else:
-            self.show_all_blogs = self.request.session.get('show_all_blogs', False)
+            self.show_all_blogs = self.request.session.get("show_all_blogs", False)
 
         if self.show_all_blogs:
-            self.tab = 'blog_list'
-            queryset = queryset.order_by('-publish_on')
+            self.tab = "blog_list"
+            queryset = queryset.order_by("-publish_on")
         else:
-            queryset = queryset.filter(global_post=True).order_by('-sticky', '-publish_on')
+            queryset = queryset.filter(global_post=True).order_by(
+                "-sticky", "-publish_on"
+            )
         return queryset
 
     def get_context_data(self, **kwargs):
         context = super(PostList, self).get_context_data(**kwargs)
-        context['first_page_href'] = reverse('home')
+        context["first_page_href"] = reverse("home")
 
-        context['newsfeed_link'] = f"{reverse('home')}?show_all_blogs=false"
-        context['all_blogs_link'] = f"{reverse('home')}?show_all_blogs=true"
+        context["newsfeed_link"] = f"{reverse('home')}?show_all_blogs=false"
+        context["all_blogs_link"] = f"{reverse('home')}?show_all_blogs=true"
 
-        context['show_all_blogs'] = self.show_all_blogs
+        context["show_all_blogs"] = self.show_all_blogs
 
-        context['page_prefix'] = reverse('blog_post_list')
-        context['comments'] = Comment.most_recent(self.request.user, 10)
-        context['new_problems'] = Problem.get_public_problems() \
-                                         .order_by('-date', 'code')[:settings.DMOJ_BLOG_NEW_PROBLEM_COUNT]
-        context['page_titles'] = CacheDict(lambda page: Comment.get_page_title(page))
+        context["page_prefix"] = reverse("blog_post_list")
+        context["comments"] = Comment.most_recent(self.request.user, 10)
+        context["new_problems"] = Problem.get_public_problems().order_by(
+            "-date", "code"
+        )[: settings.DMOJ_BLOG_NEW_PROBLEM_COUNT]
+        context["page_titles"] = CacheDict(lambda page: Comment.get_page_title(page))
 
-        context['user_count'] = Profile.objects.count
-        context['problem_count'] = Problem.get_public_problems().count
-        context['submission_count'] = lambda: Submission.objects.aggregate(max_id=Max('id'))['max_id'] or 0
-        context['language_count'] = Language.objects.count
+        context["user_count"] = Profile.objects.count
+        context["problem_count"] = Problem.get_public_problems().count
+        context["submission_count"] = (
+            lambda: Submission.objects.aggregate(max_id=Max("id"))["max_id"] or 0
+        )
+        context["language_count"] = Language.objects.count
 
         now = timezone.now()
 
-        visible_contests = Contest.get_visible_contests(self.request.user).filter(is_visible=True) \
-                                  .order_by('start_time')
+        visible_contests = (
+            Contest.get_visible_contests(self.request.user)
+            .filter(is_visible=True)
+            .order_by("start_time")
+        )
 
-        context['current_contests'] = visible_contests.filter(start_time__lte=now, end_time__gt=now)
-        context['future_contests'] = visible_contests.filter(start_time__gt=now)
+        context["current_contests"] = visible_contests.filter(
+            start_time__lte=now, end_time__gt=now
+        )
+        context["future_contests"] = visible_contests.filter(start_time__gt=now)
 
-        context['top_scorers'] = self.get_top_scorers()
-        context['top_rating_users'] = self.get_top_rating_users()
-        context['top_contrib'] = self.get_top_contributors()
+        context["top_scorers"] = self.get_top_scorers()
+        context["top_rating_users"] = self.get_top_rating_users()
+        context["top_contrib"] = self.get_top_contributors()
 
         if self.request.user.is_authenticated:
-            context['own_open_tickets'] = (
-                Ticket.objects.filter(user=self.request.profile, is_open=True).order_by('-id')
-                              .prefetch_related('linked_item').select_related('user__user')
+            context["own_open_tickets"] = (
+                Ticket.objects.filter(user=self.request.profile, is_open=True)
+                .order_by("-id")
+                .prefetch_related("linked_item")
+                .select_related("user__user")
             )
         else:
-            context['own_open_tickets'] = []
+            context["own_open_tickets"] = []
 
         # Superusers better be staffs, not the spell-casting kind either.
         if self.request.user.is_staff:
-            tickets = (Ticket.objects.order_by('-id').filter(is_open=True).prefetch_related('linked_item')
-                             .select_related('user__user'))
-            context['open_tickets'] = filter_visible_tickets(tickets, self.request.user)[:10]
+            tickets = (
+                Ticket.objects.order_by("-id")
+                .filter(is_open=True)
+                .prefetch_related("linked_item")
+                .select_related("user__user")
+            )
+            context["open_tickets"] = filter_visible_tickets(
+                tickets, self.request.user
+            )[:10]
         else:
-            context['open_tickets'] = []
+            context["open_tickets"] = []
 
-        context['tab'] = self.tab
-        context['left_align_tabs'] = True
+        context["tab"] = self.tab
+        context["left_align_tabs"] = True
 
         return context
 
     def get_top_scorers(self):
-        return (Profile.objects.order_by('-performance_points')
-                .filter(performance_points__gt=0, is_unlisted=False)
-                .only('user', 'performance_points', 'display_rank', 'rating')
-                .select_related('user')
-                [:settings.CLAOJ_HOMEPAGE_TOP_USERS_COUNT])
+        return (
+            Profile.objects.order_by("-performance_points")
+            .filter(performance_points__gt=0, is_unlisted=False)
+            .only("user", "performance_points", "display_rank", "rating")
+            .select_related("user")[: settings.CLAOJ_HOMEPAGE_TOP_USERS_COUNT]
+        )
 
     def get_top_rating_users(self):
-        return (Profile.objects.order_by('-rating')
-                .filter(performance_points__gt=0, is_unlisted=False)
-                .only('user', 'performance_points', 'display_rank', 'rating')
-                .select_related('user')
-                [:settings.CLAOJ_HOMEPAGE_TOP_USERS_COUNT])
+        return (
+            Profile.objects.order_by("-rating")
+            .filter(performance_points__gt=0, is_unlisted=False)
+            .only("user", "performance_points", "display_rank", "rating")
+            .select_related("user")[: settings.CLAOJ_HOMEPAGE_TOP_USERS_COUNT]
+        )
 
     def get_top_contributors(self):
-        return (Profile.objects.order_by('-contribution_points')
-                .filter(contribution_points__gt=0, is_unlisted=False)
-                .only('user', 'contribution_points', 'display_rank', 'rating')
-                .select_related('user')
-                [:settings.CLAOJ_HOMEPAGE_TOP_USERS_COUNT])
+        return (
+            Profile.objects.order_by("-contribution_points")
+            .filter(contribution_points__gt=0, is_unlisted=False)
+            .only("user", "contribution_points", "display_rank", "rating")
+            .select_related("user")[: settings.CLAOJ_HOMEPAGE_TOP_USERS_COUNT]
+        )
 
 
 class PostView(TitleMixin, CommentedDetailView):
     model = BlogPost
-    pk_url_kwarg = 'id'
-    context_object_name = 'post'
-    template_name = 'blog/content.html'
+    pk_url_kwarg = "id"
+    context_object_name = "post"
+    template_name = "blog/content.html"
 
     def get_title(self):
         return self.object.title
 
     def get_comment_page(self):
-        return 'b:%s' % self.object.id
+        return "b:%s" % self.object.id
 
     def get_queryset(self):
         queryset = super().get_queryset()
         if self.request.user.is_authenticated:
             profile = self.request.profile
             queryset = queryset.annotate(
-                my_vote=FilteredRelation('votes', condition=Q(votes__voter_id=profile.id)),
-            ).annotate(vote_score=Coalesce(F('my_vote__score'), Value(0)))
+                my_vote=FilteredRelation(
+                    "votes", condition=Q(votes__voter_id=profile.id)
+                ),
+            ).annotate(vote_score=Coalesce(F("my_vote__score"), Value(0)))
         return queryset
 
     def get_context_data(self, **kwargs):
         context = super(PostView, self).get_context_data(**kwargs)
 
-        metadata = generate_opengraph('generated-meta-blog:%d' % self.object.id,
-                                      self.object.summary or self.object.content, 'blog')
-        context['meta_description'] = metadata[0]
-        context['og_image'] = self.object.og_image or metadata[1]
+        metadata = generate_opengraph(
+            "generated-meta-blog:%d" % self.object.id,
+            self.object.summary or self.object.content,
+            "blog",
+        )
+        context["meta_description"] = metadata[0]
+        context["og_image"] = self.object.og_image or metadata[1]
 
         return context
 
@@ -286,15 +360,15 @@ class PostView(TitleMixin, CommentedDetailView):
 
 
 class BlogPostCreate(TitleMixin, CreateView):
-    template_name = 'blog/edit.html'
+    template_name = "blog/edit.html"
     model = BlogPost
     form_class = BlogPostForm
 
     def get_title(self):
-        return _('Creating new blog post')
+        return _("Creating new blog post")
 
     def get_content_title(self):
-        return _('Creating new blog post')
+        return _("Creating new blog post")
 
     def form_valid(self, form):
         with revisions.create_revision(atomic=True):
@@ -303,7 +377,7 @@ class BlogPostCreate(TitleMixin, CreateView):
             post.authors.add(self.request.user.profile)
             post.save()
 
-            revisions.set_comment(_('Created on site'))
+            revisions.set_comment(_("Created on site"))
             revisions.set_user(self.request.user)
 
         return HttpResponseRedirect(post.get_absolute_url())
@@ -312,33 +386,41 @@ class BlogPostCreate(TitleMixin, CreateView):
         if not request.user.is_authenticated:
             raise PermissionDenied()
         # hasattr(self, 'organization') -> admin org
-        if request.user.profile.problem_count < settings.CLAOJ_BLOG_MIN_PROBLEM_COUNT \
-                and not request.user.is_superuser and not hasattr(self, 'organization'):
-            return generic_message(request, _('Permission denied'),
-                                   _('You cannot create blog post.\n'
-                                     'Note: You need to solve at least %d problems to create new blog post.')
-                                   % settings.CLAOJ_BLOG_MIN_PROBLEM_COUNT)
+        if (
+            request.user.profile.problem_count < settings.CLAOJ_BLOG_MIN_PROBLEM_COUNT
+            and not request.user.is_superuser
+            and not hasattr(self, "organization")
+        ):
+            return generic_message(
+                request,
+                _("Permission denied"),
+                _(
+                    "You cannot create blog post.\n"
+                    "Note: You need to solve at least %d problems to create new blog post."
+                )
+                % settings.CLAOJ_BLOG_MIN_PROBLEM_COUNT,
+            )
         return super().dispatch(request, *args, **kwargs)
 
 
 class BlogPostEdit(BlogPostMixin, TitleMixin, UpdateView):
-    template_name = 'blog/edit.html'
+    template_name = "blog/edit.html"
     model = BlogPost
     form_class = BlogPostForm
 
     def get_title(self):
-        return _('Updating blog post')
+        return _("Updating blog post")
 
     def get_content_title(self):
-        return _('Updating blog post')
+        return _("Updating blog post")
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['edit'] = True
+        context["edit"] = True
         return context
 
     def form_valid(self, form):
         with revisions.create_revision(atomic=True):
-            revisions.set_comment(_('Edited from site'))
+            revisions.set_comment(_("Edited from site"))
             revisions.set_user(self.request.user)
             return super(BlogPostEdit, self).form_valid(form)

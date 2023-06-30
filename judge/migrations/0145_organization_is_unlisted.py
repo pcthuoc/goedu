@@ -4,15 +4,18 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('judge', '0144_organization_member_count'),
+        ("judge", "0144_organization_member_count"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='organization',
-            name='is_unlisted',
-            field=models.BooleanField(default=True, help_text='Organization will not be listed', verbose_name='is unlisted organization?'),
+            model_name="organization",
+            name="is_unlisted",
+            field=models.BooleanField(
+                default=True,
+                help_text="Organization will not be listed",
+                verbose_name="is unlisted organization?",
+            ),
         ),
     ]

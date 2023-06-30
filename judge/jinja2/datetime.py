@@ -10,7 +10,7 @@ from . import registry
 def localtime_wrapper(func):
     @functools.wraps(func)
     def wrapper(datetime, *args, **kwargs):
-        if getattr(datetime, 'convert_to_local_time', True):
+        if getattr(datetime, "convert_to_local_time", True):
             datetime = localtime(datetime)
         return func(datetime, *args, **kwargs)
 
@@ -22,11 +22,11 @@ registry.filter(localtime_wrapper(time))
 
 
 @registry.function
-@registry.render_with('widgets/relative-time.html')
+@registry.render_with("widgets/relative-time.html")
 def relative_time(time, **kwargs):
     return {
-        'time': time,
-        'format': kwargs.get('format', _('N j, Y, g:i a')),
-        'rel_format': kwargs.get('rel', _('{time}')),
-        'abs_format': kwargs.get('abs', _('on {time}')),
+        "time": time,
+        "format": kwargs.get("format", _("N j, Y, g:i a")),
+        "rel_format": kwargs.get("rel", _("{time}")),
+        "abs_format": kwargs.get("abs", _("on {time}")),
     }

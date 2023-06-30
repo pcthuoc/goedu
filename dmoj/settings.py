@@ -135,15 +135,15 @@ DMOJ_PASSWORD_RESET_LIMIT_COUNT = 10
 
 # At the bare minimum, dark and light theme CSS file locations must be declared
 DMOJ_THEME_CSS = {
-    'light': 'style.css',
-    'dark': 'dark/style.css',
+    "light": "style.css",
+    "dark": "dark/style.css",
 }
 # At the bare minimum, dark and light ace themes must be declared
 DMOJ_THEME_DEFAULT_ACE_THEME = {
-    'light': 'tomorrow',
-    'dark': 'tomorrow_night',
+    "light": "tomorrow",
+    "dark": "tomorrow_night",
 }
-DMOJ_SELECT2_THEME = 'dmoj'
+DMOJ_SELECT2_THEME = "dmoj"
 
 MARKDOWN_STYLES = {}
 MARKDOWN_DEFAULT_STYLE = {}
@@ -166,7 +166,7 @@ BAD_MAIL_PROVIDERS = ()
 BAD_MAIL_PROVIDER_REGEX = ()
 NOFOLLOW_EXCLUDED = set()
 
-TIMEZONE_MAP = 'https://static.dmoj.ca/assets/earth.jpg'
+TIMEZONE_MAP = "https://static.dmoj.ca/assets/earth.jpg"
 TIMEZONE_DETECT_BACKEND = None
 
 TERMS_OF_SERVICE_URL = None
@@ -361,10 +361,10 @@ AUTH_PASSWORD_VALIDATORS = [
 
 SILENCED_SYSTEM_CHECKS = ["urls.W002", "fields.W342"]
 
-ROOT_URLCONF = 'dmoj.urls'
-LOGIN_REDIRECT_URL = '/user'
-WSGI_APPLICATION = 'dmoj.wsgi.application'
-DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
+ROOT_URLCONF = "dmoj.urls"
+LOGIN_REDIRECT_URL = "/user"
+WSGI_APPLICATION = "dmoj.wsgi.application"
+DEFAULT_AUTO_FIELD = "django.db.models.AutoField"
 
 TEMPLATES = [
     {
@@ -372,32 +372,33 @@ TEMPLATES = [
         "DIRS": [
             os.path.join(BASE_DIR, "templates"),
         ],
-        'APP_DIRS': False,
-        'OPTIONS': {
-            'match_extension': ('.html', '.txt'),
-            'match_regex': '^(?!admin/)',
-            'context_processors': [
-                'django.template.context_processors.media',
-                'django.template.context_processors.tz',
-                'django.template.context_processors.i18n',
-                'django.template.context_processors.request',
-                'django.contrib.messages.context_processors.messages',
-                'judge.template_context.comet_location',
-                'judge.template_context.get_resource',
-                'judge.template_context.general_info',
-                'judge.template_context.site',
-                'judge.template_context.site_name',
-                'judge.template_context.site_theme',
-                'judge.template_context.misc_config',
-                'judge.template_context.math_setting',
-                'social_django.context_processors.backends',
-                'social_django.context_processors.login_redirect',
+        "APP_DIRS": False,
+        "OPTIONS": {
+            "match_extension": (".html", ".txt"),
+            "match_regex": "^(?!admin/)",
+            "context_processors": [
+                "django.template.context_processors.media",
+                "django.template.context_processors.tz",
+                "django.template.context_processors.i18n",
+                "django.template.context_processors.request",
+                "django.contrib.messages.context_processors.messages",
+                "judge.template_context.comet_location",
+                "judge.template_context.get_resource",
+                "judge.template_context.general_info",
+                "judge.template_context.site",
+                "judge.template_context.site_name",
+                "judge.template_context.site_theme",
+                "judge.template_context.misc_config",
+                "judge.template_context.math_setting",
+                "social_django.context_processors.backends",
+                "social_django.context_processors.login_redirect",
             ],
             "autoescape": select_autoescape(["html", "xml"]),
             "trim_blocks": True,
             "lstrip_blocks": True,
             "translation_engine": "judge.utils.safe_translations",
-            "extensions": DEFAULT_EXTENSIONS + [
+            "extensions": DEFAULT_EXTENSIONS
+            + [
                 "compressor.contrib.jinja2ext.CompressorExtension",
                 "judge.jinja2.DMOJExtension",
                 "judge.jinja2.spaceless.SpacelessExtension",
@@ -718,5 +719,5 @@ except IOError:
     pass
 
 # Compute these values after local_settings.py is loaded
-ACE_DEFAULT_LIGHT_THEME = DMOJ_THEME_DEFAULT_ACE_THEME['light']
-ACE_DEFAULT_DARK_THEME = DMOJ_THEME_DEFAULT_ACE_THEME['dark']
+ACE_DEFAULT_LIGHT_THEME = DMOJ_THEME_DEFAULT_ACE_THEME["light"]
+ACE_DEFAULT_DARK_THEME = DMOJ_THEME_DEFAULT_ACE_THEME["dark"]

@@ -11,7 +11,7 @@ import uuid
 from django.conf import settings
 from django.utils.translation import gettext
 
-logger = logging.getLogger('judge.problem.pdf')
+logger = logging.getLogger("judge.problem.pdf")
 
 HAS_SELENIUM = False
 if settings.USE_SELENIUM:
@@ -21,9 +21,10 @@ if settings.USE_SELENIUM:
         from selenium.webdriver.common.by import By
         from selenium.webdriver.support import expected_conditions as EC
         from selenium.webdriver.support.ui import WebDriverWait
+
         HAS_SELENIUM = True
     except ImportError:
-        logger.warning('Failed to import Selenium', exc_info=True)
+        logger.warning("Failed to import Selenium", exc_info=True)
 
 HAS_PHANTOMJS = os.access(settings.PHANTOMJS, os.X_OK)
 HAS_SLIMERJS = os.access(settings.SLIMERJS, os.X_OK)
@@ -32,28 +33,31 @@ NODE_PATH = settings.NODEJS
 PUPPETEER_MODULE = settings.PUPPETEER_MODULE
 HAS_PUPPETEER = os.access(NODE_PATH, os.X_OK) and os.path.isdir(PUPPETEER_MODULE)
 
-HAS_PDF = (os.path.isdir(settings.DMOJ_PDF_PROBLEM_CACHE) and
-           (HAS_PHANTOMJS or HAS_SLIMERJS or HAS_PUPPETEER or HAS_SELENIUM))
+HAS_PDF = os.path.isdir(settings.DMOJ_PDF_PROBLEM_CACHE) and (
+    HAS_PHANTOMJS or HAS_SLIMERJS or HAS_PUPPETEER or HAS_SELENIUM
+)
 
 EXIFTOOL = settings.EXIFTOOL
 HAS_EXIFTOOL = os.access(EXIFTOOL, os.X_OK)
 
 
 class BasePdfMaker(object):
-    math_engine = 'jax'
+    math_engine = "jax"
     title = None
 
     def __init__(self, dir=None, clean_up=True, footer=True):
-        self.dir = dir or os.path.join(settings.DMOJ_PDF_PROBLEM_TEMP_DIR, str(uuid.uuid1()))
+        self.dir = dir or os.path.join(
+            settings.DMOJ_PDF_PROBLEM_TEMP_DIR, str(uuid.uuid1())
+        )
         self.proc = None
         self.log = None
-        self.htmlfile = os.path.join(self.dir, 'input.html')
-        self.pdffile = os.path.join(self.dir, 'output.pdf')
+        self.htmlfile = os.path.join(self.dir, "input.html")
+        self.pdffile = os.path.join(self.dir, "output.pdf")
         self.clean_up = clean_up
         self.footer = footer
 
     def load(self, file, source):
-        with open(os.path.join(self.dir, file), 'w') as target, open(source) as source:
+        with open(os.path.join(self.dir, file), "w") as target, open(source) as source:
             target.write(source.read())
 
     def make(self, debug=False):
@@ -61,21 +65,27 @@ class BasePdfMaker(object):
 
         if self.title and HAS_EXIFTOOL:
             try:
-                subprocess.check_output([EXIFTOOL, '-Title=%s' % (self.title,), self.pdffile])
+                subprocess.check_output(
+                    [EXIFTOOL, "-Title=%s" % (self.title,), self.pdffile]
+                )
             except subprocess.CalledProcessError as e:
-                logger.error('Failed to run exiftool to set title for: %s\n%s', self.title, e.output)
+                logger.error(
+                    "Failed to run exiftool to set title for: %s\n%s",
+                    self.title,
+                    e.output,
+                )
 
     def _make(self, debug):
         raise NotImplementedError()
 
     @property
     def html(self):
-        with io.open(self.htmlfile, encoding='utf-8') as f:
+        with io.open(self.htmlfile, encoding="utf-8") as f:
             return f.read()
 
     @html.setter
     def html(self, data):
-        with io.open(self.htmlfile, 'w', encoding='utf-8') as f:
+        with io.open(self.htmlfile, "w", encoding="utf-8") as f:
             f.write(data)
 
     @property
@@ -100,7 +110,7 @@ class BasePdfMaker(object):
 
 
 class PhantomJSPdfMaker(BasePdfMaker):
-    template = '''\
+    template = """\
 "use strict";
 var page = require('webpage').create();
 var param = {params};
@@ -137,30 +147,42 @@ page.open(param.input, function (status) {
         }, param.timeout);
     }
 });
-'''
+"""
 
     def get_render_script(self):
-        return self.template.replace('{params}', json.dumps({
-            'zoom': settings.PHANTOMJS_PDF_ZOOM,
-            'timeout': int(settings.PHANTOMJS_PDF_TIMEOUT * 1000),
-            'input': 'input.html', 'output': 'output.pdf',
-            'paper': settings.PHANTOMJS_PAPER_SIZE,
-            'footer': gettext('Page [page] of [topage]') if self.footer else '',
-        }))
+        return self.template.replace(
+            "{params}",
+            json.dumps(
+                {
+                    "zoom": settings.PHANTOMJS_PDF_ZOOM,
+                    "timeout": int(settings.PHANTOMJS_PDF_TIMEOUT * 1000),
+                    "input": "input.html",
+                    "output": "output.pdf",
+                    "paper": settings.PHANTOMJS_PAPER_SIZE,
+                    "footer": gettext("Page [page] of [topage]") if self.footer else "",
+                }
+            ),
+        )
 
     def _make(self, debug):
-        with io.open(os.path.join(self.dir, '_render.js'), 'w', encoding='utf-8') as f:
+        with io.open(os.path.join(self.dir, "_render.js"), "w", encoding="utf-8") as f:
             f.write(self.get_render_script())
-        cmdline = [settings.PHANTOMJS, '_render.js']
-        env = {'OPENSSL_CONF': '/etc/ssl'}
-        self.proc = subprocess.Popen(cmdline, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, cwd=self.dir, env=env)
+        cmdline = [settings.PHANTOMJS, "_render.js"]
+        env = {"OPENSSL_CONF": "/etc/ssl"}
+        self.proc = subprocess.Popen(
+            cmdline,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT,
+            cwd=self.dir,
+            env=env,
+        )
         self.log = self.proc.communicate()[0]
 
 
 class SlimerJSPdfMaker(BasePdfMaker):
-    math_engine = 'mml'
+    math_engine = "mml"
 
-    template = '''\
+    template = """\
 "use strict";
 try {
     var param = {params};
@@ -192,37 +214,53 @@ try {
     console.error(e);
     slimer.exit(1);
 }
-'''
+"""
 
     def get_render_script(self):
         if self.footer:
-            footer = gettext('Page [page] of [topage]').replace('[page]', '&P').replace('[topage]', '&L')
+            footer = (
+                gettext("Page [page] of [topage]")
+                .replace("[page]", "&P")
+                .replace("[topage]", "&L")
+            )
         else:
-            footer = ''
-        return self.template.replace('{params}', json.dumps({
-            'zoom': settings.SLIMERJS_PDF_ZOOM,
-            'input': 'input.html', 'output': 'output.pdf',
-            'paper': settings.SLIMERJS_PAPER_SIZE,
-            'footer': footer,
-        }))
+            footer = ""
+        return self.template.replace(
+            "{params}",
+            json.dumps(
+                {
+                    "zoom": settings.SLIMERJS_PDF_ZOOM,
+                    "input": "input.html",
+                    "output": "output.pdf",
+                    "paper": settings.SLIMERJS_PAPER_SIZE,
+                    "footer": footer,
+                }
+            ),
+        )
 
     def _make(self, debug):
-        with io.open(os.path.join(self.dir, '_render.js'), 'w', encoding='utf-8') as f:
+        with io.open(os.path.join(self.dir, "_render.js"), "w", encoding="utf-8") as f:
             f.write(self.get_render_script())
 
         env = None
         firefox = settings.SLIMERJS_FIREFOX_PATH
         if firefox:
             env = os.environ.copy()
-            env['SLIMERJSLAUNCHER'] = firefox
+            env["SLIMERJSLAUNCHER"] = firefox
 
-        cmdline = [settings.SLIMERJS, '--headless', '_render.js']
-        self.proc = subprocess.Popen(cmdline, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, cwd=self.dir, env=env)
+        cmdline = [settings.SLIMERJS, "--headless", "_render.js"]
+        self.proc = subprocess.Popen(
+            cmdline,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT,
+            cwd=self.dir,
+            env=env,
+        )
         self.log = self.proc.communicate()[0]
 
 
 class PuppeteerPDFRender(BasePdfMaker):
-    template = '''\
+    template = """\
 "use strict";
 const param = {params};
 const puppeteer = require('puppeteer');
@@ -256,43 +294,58 @@ puppeteer.launch().then(browser => Promise.resolve()
     console.error(e);
     process.exit(1);
 });
-'''
+"""
 
     def get_render_script(self):
-        return self.template.replace('{params}', json.dumps({
-            'input': 'file://%s' % self.htmlfile,
-            'output': self.pdffile,
-            'paper': settings.PUPPETEER_PAPER_SIZE,
-            'footer': gettext('Page [page] of [topage]') if self.footer else '',
-        }))
+        return self.template.replace(
+            "{params}",
+            json.dumps(
+                {
+                    "input": "file://%s" % self.htmlfile,
+                    "output": self.pdffile,
+                    "paper": settings.PUPPETEER_PAPER_SIZE,
+                    "footer": gettext("Page [page] of [topage]") if self.footer else "",
+                }
+            ),
+        )
 
     def _make(self, debug):
-        with io.open(os.path.join(self.dir, '_render.js'), 'w', encoding='utf-8') as f:
+        with io.open(os.path.join(self.dir, "_render.js"), "w", encoding="utf-8") as f:
             f.write(self.get_render_script())
 
         env = os.environ.copy()
-        env['NODE_PATH'] = os.path.dirname(PUPPETEER_MODULE)
+        env["NODE_PATH"] = os.path.dirname(PUPPETEER_MODULE)
 
-        cmdline = [NODE_PATH, '_render.js']
-        self.proc = subprocess.Popen(cmdline, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, cwd=self.dir, env=env)
+        cmdline = [NODE_PATH, "_render.js"]
+        self.proc = subprocess.Popen(
+            cmdline,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT,
+            cwd=self.dir,
+            env=env,
+        )
         self.log = self.proc.communicate()[0]
 
 
 class SeleniumPDFRender(BasePdfMaker):
     success = False
     template = {
-        'printBackground': True,
-        'displayHeaderFooter': True,
-        'headerTemplate': '<div></div>',
-        'footerTemplate': '<center style="margin: 0 auto; font-family: Segoe UI; font-size: 10px">' +
-                          gettext('Page %(current)s of %(total)s') % ({
-                              'current': '<span class="pageNumber"></span>',
-                              'total': '<span class="totalPages"></span>',
-                          }) + '</center>',
+        "printBackground": True,
+        "displayHeaderFooter": True,
+        "headerTemplate": "<div></div>",
+        "footerTemplate": '<center style="margin: 0 auto; font-family: Segoe UI; font-size: 10px">'
+        + gettext("Page %(current)s of %(total)s")
+        % (
+            {
+                "current": '<span class="pageNumber"></span>',
+                "total": '<span class="totalPages"></span>',
+            }
+        )
+        + "</center>",
     }
 
     def get_log(self, driver):
-        return '\n'.join(map(str, driver.get_log('driver') + driver.get_log('browser')))
+        return "\n".join(map(str, driver.get_log("driver") + driver.get_log("browser")))
 
     def _make(self, debug):
         options = webdriver.ChromeOptions()
@@ -300,27 +353,29 @@ class SeleniumPDFRender(BasePdfMaker):
         options.binary_location = settings.SELENIUM_CUSTOM_CHROME_PATH
 
         browser = webdriver.Chrome(settings.SELENIUM_CHROMEDRIVER_PATH, options=options)
-        browser.get('file://%s' % self.htmlfile)
+        browser.get("file://%s" % self.htmlfile)
         self.log = self.get_log(browser)
 
         try:
-            WebDriverWait(browser, 15).until(EC.presence_of_element_located((By.CLASS_NAME, 'math-loaded')))
+            WebDriverWait(browser, 15).until(
+                EC.presence_of_element_located((By.CLASS_NAME, "math-loaded"))
+            )
         except TimeoutException:
-            logger.error('PDF math rendering timed out')
-            self.log = self.get_log(browser) + '\nPDF math rendering timed out'
+            logger.error("PDF math rendering timed out")
+            self.log = self.get_log(browser) + "\nPDF math rendering timed out"
             return
 
         template = self.template
         if not self.footer:
             template = template.copy()
-            template['footerTemplate'] = '<div></div>'
-        response = browser.execute_cdp_cmd('Page.printToPDF', template)
+            template["footerTemplate"] = "<div></div>"
+        response = browser.execute_cdp_cmd("Page.printToPDF", template)
         self.log = self.get_log(browser)
         if not response:
             return
 
-        with open(self.pdffile, 'wb') as f:
-            f.write(base64.b64decode(response['data']))
+        with open(self.pdffile, "wb") as f:
+            f.write(base64.b64decode(response["data"]))
 
         self.success = True
 

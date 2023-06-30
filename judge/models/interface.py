@@ -12,7 +12,7 @@ from mptt.models import MPTTModel
 
 from judge.models.profile import Organization, Profile
 
-__all__ = ['MiscConfig', 'validate_regex', 'NavigationBar', 'BlogPost']
+__all__ = ["MiscConfig", "validate_regex", "NavigationBar", "BlogPost"]
 
 
 class MiscConfig(models.Model):
@@ -23,32 +23,40 @@ class MiscConfig(models.Model):
         return self.key
 
     class Meta:
-        verbose_name = _('configuration item')
-        verbose_name_plural = _('miscellaneous configuration')
+        verbose_name = _("configuration item")
+        verbose_name_plural = _("miscellaneous configuration")
 
 
 def validate_regex(regex):
     try:
         re.compile(regex, re.VERBOSE)
     except re.error as e:
-        raise ValidationError('Invalid regex: %s' % e.message)
+        raise ValidationError("Invalid regex: %s" % e.message)
 
 
 class NavigationBar(MPTTModel):
     class Meta:
-        verbose_name = _('navigation item')
-        verbose_name_plural = _('navigation bar')
+        verbose_name = _("navigation item")
+        verbose_name_plural = _("navigation bar")
 
     class MPTTMeta:
-        order_insertion_by = ['order']
+        order_insertion_by = ["order"]
 
-    order = models.PositiveIntegerField(db_index=True, verbose_name=_('order'))
-    key = models.CharField(max_length=10, unique=True, verbose_name=_('identifier'))
-    label = models.CharField(max_length=20, verbose_name=_('label'))
-    path = models.CharField(max_length=255, verbose_name=_('link path'))
-    regex = models.TextField(verbose_name=_('highlight regex'), validators=[validate_regex])
-    parent = TreeForeignKey('self', verbose_name=_('parent item'), null=True, blank=True,
-                            related_name='children', on_delete=models.CASCADE)
+    order = models.PositiveIntegerField(db_index=True, verbose_name=_("order"))
+    key = models.CharField(max_length=10, unique=True, verbose_name=_("identifier"))
+    label = models.CharField(max_length=20, verbose_name=_("label"))
+    path = models.CharField(max_length=255, verbose_name=_("link path"))
+    regex = models.TextField(
+        verbose_name=_("highlight regex"), validators=[validate_regex]
+    )
+    parent = TreeForeignKey(
+        "self",
+        verbose_name=_("parent item"),
+        null=True,
+        blank=True,
+        related_name="children",
+        on_delete=models.CASCADE,
+    )
 
     def __str__(self):
         return self.label
@@ -65,27 +73,39 @@ class NavigationBar(MPTTModel):
 
 
 class BlogPost(models.Model):
-    title = models.CharField(verbose_name=_('post title'), max_length=100)
-    authors = models.ManyToManyField(Profile, verbose_name=_('authors'), blank=True)
-    slug = models.SlugField(verbose_name=_('slug'))
-    visible = models.BooleanField(verbose_name=_('public visibility'), default=False)
-    sticky = models.BooleanField(verbose_name=_('sticky'), default=False)
-    publish_on = models.DateTimeField(verbose_name=_('publish after'))
-    content = models.TextField(verbose_name=_('post content'))
-    summary = models.TextField(verbose_name=_('post summary'), blank=True)
-    og_image = models.CharField(verbose_name=_('OpenGraph image'), default='', max_length=150, blank=True)
-    score = models.IntegerField(verbose_name=_('votes'), default=0)
-    global_post = models.BooleanField(verbose_name=_('global post'), default=False,
-                                      help_text=_('Display this blog post at the homepage.'))
-    organization = models.ForeignKey(Organization, on_delete=models.CASCADE, verbose_name=_('organization'),
-                                     related_name='post_author_org', blank=True, null=True, db_index=True)
+    title = models.CharField(verbose_name=_("post title"), max_length=100)
+    authors = models.ManyToManyField(Profile, verbose_name=_("authors"), blank=True)
+    slug = models.SlugField(verbose_name=_("slug"))
+    visible = models.BooleanField(verbose_name=_("public visibility"), default=False)
+    sticky = models.BooleanField(verbose_name=_("sticky"), default=False)
+    publish_on = models.DateTimeField(verbose_name=_("publish after"))
+    content = models.TextField(verbose_name=_("post content"))
+    summary = models.TextField(verbose_name=_("post summary"), blank=True)
+    og_image = models.CharField(
+        verbose_name=_("OpenGraph image"), default="", max_length=150, blank=True
+    )
+    score = models.IntegerField(verbose_name=_("votes"), default=0)
+    global_post = models.BooleanField(
+        verbose_name=_("global post"),
+        default=False,
+        help_text=_("Display this blog post at the homepage."),
+    )
+    organization = models.ForeignKey(
+        Organization,
+        on_delete=models.CASCADE,
+        verbose_name=_("organization"),
+        related_name="post_author_org",
+        blank=True,
+        null=True,
+        db_index=True,
+    )
 
     def __str__(self):
         return self.title
 
     def vote(self, delta):
         self.score += delta
-        self.save(update_fields=['score'])
+        self.save(update_fields=["score"])
 
         # # Only update contributions for global and personal posts
         # if self.visible and self.organization is None:
@@ -94,7 +114,7 @@ class BlogPost(models.Model):
         #         author.update_contribution_points(delta * settings.VNOJ_CP_COMMENT)
 
     def get_absolute_url(self):
-        return reverse('blog_post', args=(self.id, self.slug))
+        return reverse("blog_post", args=(self.id, self.slug))
 
     def can_see(self, user):
         # Post is public
@@ -116,29 +136,31 @@ class BlogPost(models.Model):
     def is_editable_by(self, user):
         if not user.is_authenticated:
             return False
-        if user.has_perm('judge.edit_all_post'):
+        if user.has_perm("judge.edit_all_post"):
             return True
         if self.organization:
-            return self.organization.is_admin(user.profile) and \
-                user.has_perm('judge.edit_organization_post') and \
-                self.authors.filter(id=user.profile.id).exists()
+            return (
+                self.organization.is_admin(user.profile)
+                and user.has_perm("judge.edit_organization_post")
+                and self.authors.filter(id=user.profile.id).exists()
+            )
         return self.authors.filter(id=user.profile.id).exists()
 
     class Meta:
         permissions = (
-            ('edit_all_post', _('Edit all posts')),
-            ('edit_organization_post', _('Edit organization posts')),
+            ("edit_all_post", _("Edit all posts")),
+            ("edit_organization_post", _("Edit organization posts")),
         )
-        verbose_name = _('blog post')
-        verbose_name_plural = _('blog posts')
+        verbose_name = _("blog post")
+        verbose_name_plural = _("blog posts")
 
 
 class BlogVote(models.Model):
-    voter = models.ForeignKey(Profile, related_name='voted_blogs', on_delete=CASCADE)
-    blog = models.ForeignKey(BlogPost, related_name='votes', on_delete=CASCADE)
+    voter = models.ForeignKey(Profile, related_name="voted_blogs", on_delete=CASCADE)
+    blog = models.ForeignKey(BlogPost, related_name="votes", on_delete=CASCADE)
     score = models.IntegerField()
 
     class Meta:
-        unique_together = ['voter', 'blog']
-        verbose_name = _('blog vote')
-        verbose_name_plural = _('blog votes')
+        unique_together = ["voter", "blog"]
+        verbose_name = _("blog vote")
+        verbose_name_plural = _("blog votes")

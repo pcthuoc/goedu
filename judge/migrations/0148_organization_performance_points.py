@@ -4,15 +4,14 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('judge', '0147_blog_post_org'),
+        ("judge", "0147_blog_post_org"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='organization',
-            name='performance_points',
+            model_name="organization",
+            name="performance_points",
             field=models.FloatField(default=0),
         ),
     ]

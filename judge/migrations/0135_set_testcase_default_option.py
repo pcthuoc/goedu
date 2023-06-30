@@ -4,21 +4,26 @@ from django.db import migrations
 
 
 def set_default_test_visibility_mode(apps, schema_editor):
-    Problem = apps.get_model('judge', 'Problem')
-    Problem.objects.filter(testcase_visibility_mode='O').update(testcase_visibility_mode='C')
+    Problem = apps.get_model("judge", "Problem")
+    Problem.objects.filter(testcase_visibility_mode="O").update(
+        testcase_visibility_mode="C"
+    )
 
 
 def unset_default_test_visibility_mode(apps, schema_editor):
-    Problem = apps.get_model('judge', 'Problem')
-    Problem.objects.filter(testcase_visibility_mode='C').update(testcase_visibility_mode='O')
+    Problem = apps.get_model("judge", "Problem")
+    Problem.objects.filter(testcase_visibility_mode="C").update(
+        testcase_visibility_mode="O"
+    )
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('judge', '0134_auto_20220405_1138'),
+        ("judge", "0134_auto_20220405_1138"),
     ]
 
     operations = [
-        migrations.RunPython(set_default_test_visibility_mode, unset_default_test_visibility_mode),
+        migrations.RunPython(
+            set_default_test_visibility_mode, unset_default_test_visibility_mode
+        ),
     ]

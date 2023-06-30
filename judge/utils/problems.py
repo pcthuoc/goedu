@@ -21,7 +21,8 @@ __all__ = [
 def user_tester_ids(profile):
     return set(
         Problem.testers.through.objects.filter(profile=profile).values_list(
-            "problem_id", flat=True,
+            "problem_id",
+            flat=True,
         ),
     )
 
@@ -36,7 +37,8 @@ def contest_completed_ids(participation):
     if result is None:
         result = set(
             participation.submissions.filter(
-                submission__result="AC", points=F("problem__points"),
+                submission__result="AC",
+                points=F("problem__points"),
             )
             .values_list("problem__problem__id", flat=True)
             .distinct(),
@@ -51,7 +53,9 @@ def user_completed_ids(profile):
     if result is None:
         result = set(
             Submission.objects.filter(
-                user=profile, result="AC", points=F("problem__points"),
+                user=profile,
+                result="AC",
+                points=F("problem__points"),
             )
             .values_list("problem_id", flat=True)
             .distinct(),
@@ -66,7 +70,8 @@ def contest_attempted_ids(participation):
     if result is None:
         result = set(
             participation.submissions.values_list(
-                "problem__problem_id", flat=True,
+                "problem__problem_id",
+                flat=True,
             ).distinct(),
         )
         cache.set(key, result, 300)
@@ -95,8 +100,13 @@ def _get_result_data(results):
             {
                 "code": "ERR",
                 "name": gettext_noop("Error"),
-                "count": results["CE"] + results["MLE"] + results["OLE"] + results["IR"] +
-                        results["RTE"] + results["AB"] + results["IE"],
+                "count": results["CE"]
+                + results["MLE"]
+                + results["OLE"]
+                + results["IR"]
+                + results["RTE"]
+                + results["AB"]
+                + results["IE"],
             },
         ],
         "total": sum(results.values()),
@@ -127,7 +137,9 @@ def hot_problems(duration, limit):
     qs = cache.get(cache_key)
     if qs is None:
         qs = Problem.get_public_problems().filter(
-            submission__date__gt=timezone.now() - duration, points__gt=3, points__lt=25,
+            submission__date__gt=timezone.now() - duration,
+            points__gt=3,
+            points__lt=25,
         )
         qs0 = (
             qs.annotate(k=Count("submission__user", distinct=True))
@@ -168,9 +180,13 @@ def hot_problems(duration, limit):
         qs = (
             qs.annotate(
                 ordering=ExpressionWrapper(
-                    0.5 * F("points") * (
-                        0.4 * F("ac_volume") / F("submission_volume") + 0.6 * F("ac_rate")
-                    ) + 100 * e ** (F("unique_user_count") / mx),
+                    0.5
+                    * F("points")
+                    * (
+                        0.4 * F("ac_volume") / F("submission_volume")
+                        + 0.6 * F("ac_rate")
+                    )
+                    + 100 * e ** (F("unique_user_count") / mx),
                     output_field=FloatField(),
                 ),
             )

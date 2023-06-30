@@ -4,15 +4,16 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('judge', '0160_problem_source'),
+        ("judge", "0160_problem_source"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='profile',
-            name='ban_reason',
-            field=models.TextField(blank=True, help_text='Show to banned user in login page.', null=True),
+            model_name="profile",
+            name="ban_reason",
+            field=models.TextField(
+                blank=True, help_text="Show to banned user in login page.", null=True
+            ),
         ),
     ]

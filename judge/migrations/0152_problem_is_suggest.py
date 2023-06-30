@@ -4,15 +4,18 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('judge', '0151_contest_announcement'),
+        ("judge", "0151_contest_announcement"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='problem',
-            name='is_suggest',
-            field=models.BooleanField(default=False, help_text='Check if this problem is suggested and waiting for revision.', verbose_name='is suggest'),
+            model_name="problem",
+            name="is_suggest",
+            field=models.BooleanField(
+                default=False,
+                help_text="Check if this problem is suggested and waiting for revision.",
+                verbose_name="is suggest",
+            ),
         ),
     ]

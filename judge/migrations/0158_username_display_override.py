@@ -4,25 +4,37 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('judge', '0157_generalissue'),
+        ("judge", "0157_generalissue"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='profile',
-            name='username_display_override',
-            field=models.CharField(blank=True, help_text='Name displayed in place of username', max_length=100, verbose_name='display name override'),
+            model_name="profile",
+            name="username_display_override",
+            field=models.CharField(
+                blank=True,
+                help_text="Name displayed in place of username",
+                max_length=100,
+                verbose_name="display name override",
+            ),
         ),
         migrations.AlterField(
-            model_name='contest',
-            name='private_contestants',
-            field=models.ManyToManyField(blank=True, help_text='If private, only these users may see the contest.', related_name='_contest_private_contestants_+', to='judge.Profile', verbose_name='private contestants'),
+            model_name="contest",
+            name="private_contestants",
+            field=models.ManyToManyField(
+                blank=True,
+                help_text="If private, only these users may see the contest.",
+                related_name="_contest_private_contestants_+",
+                to="judge.Profile",
+                verbose_name="private contestants",
+            ),
         ),
         migrations.AlterField(
-            model_name='judge',
-            name='last_ip',
-            field=models.GenericIPAddressField(blank=True, null=True, verbose_name='last connected IP'),
+            model_name="judge",
+            name="last_ip",
+            field=models.GenericIPAddressField(
+                blank=True, null=True, verbose_name="last connected IP"
+            ),
         ),
     ]

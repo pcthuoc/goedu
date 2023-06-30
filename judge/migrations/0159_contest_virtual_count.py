@@ -4,15 +4,16 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('judge', '0158_username_display_override'),
+        ("judge", "0158_username_display_override"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='contest',
-            name='virtual_count',
-            field=models.IntegerField(default=0, verbose_name='the amount of virtual participants'),
+            model_name="contest",
+            name="virtual_count",
+            field=models.IntegerField(
+                default=0, verbose_name="the amount of virtual participants"
+            ),
         ),
     ]
