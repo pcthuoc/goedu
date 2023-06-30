@@ -1,5 +1,5 @@
-import os
 import json
+import os
 from collections import namedtuple
 from itertools import groupby
 from operator import attrgetter
