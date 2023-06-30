@@ -124,7 +124,9 @@
 
 {% block body %}
     <br>
-
+    {% if submission.language.file_only %}
+        <div><a href="{{ url('submission_source_download', submission.id) }}">{{ _('Download') }}</a></div>
+    {% endif %}
     {% if (request.user == submission.user.user or perms.judge.resubmit_other) and not submission.language.file_only %}
         <div><a href="{{ url('problem_submit', submission.problem.code, submission.id) }}"><i class="fa-solid fa-paper-plane fa-fw"></i> {{ _('Resubmit') }}</a></div>
     {% endif %}
@@ -148,7 +150,7 @@
             </form>
         </div>
     {% endif %}
-    {% if can_edit %}
+    {% if can_edit and not submission.language.file_only %}
         <div><a href="{{ url('problem_submission_diff', submission.problem.code) }}?username={{ submission.user.user.username }}&highlight={{ submission.id }}">
             <i class="fa-solid fa-code-compare fa-fw"></i> {{ _('Diff this submission') }}
         </a></div>

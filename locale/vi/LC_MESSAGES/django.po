@@ -6453,6 +6453,9 @@ msgstr "Trường hợp #%(case)s"
 msgid "view"
 msgstr "xem"
 
+#: templates/submission/row.html:63
+msgid "download"
+msgstr "tải bài nộp"
 #: templates/submission/row.html:60
 msgid "rejudge"
 msgstr "chấm lại"
