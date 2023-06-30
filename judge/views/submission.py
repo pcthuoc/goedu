@@ -45,6 +45,7 @@ def submission_related(queryset):
 class SubmissionSourcePermissionDenied(PermissionDenied):
     pass
 
+
 class SubmissionPermissionDenied(PermissionDenied):
     def __init__(self, submission):
         self.submission = submission
