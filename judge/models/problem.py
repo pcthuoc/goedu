@@ -1,7 +1,8 @@
 import errno
 import json
 from operator import attrgetter
-
+from django.db import models
+from django.utils import timezone
 from django.conf import settings
 from django.contrib.contenttypes.fields import GenericRelation
 from django.core.cache import cache
@@ -283,7 +284,7 @@ class Problem(models.Model):
         help_text=_("List of allowed submission languages."),
     )
     is_public = models.BooleanField(
-        verbose_name=_("publicly visible"), db_index=True, default=False
+        verbose_name=_("publicly visible"), db_index=True, default=True
     )
     is_manually_managed = models.BooleanField(
         verbose_name=_("manually managed"),
@@ -293,6 +294,7 @@ class Problem(models.Model):
     )
     date = models.DateTimeField(
         verbose_name=_("date of publishing"),
+        default=timezone.now,
         null=True,
         blank=True,
         db_index=True,
@@ -341,7 +343,7 @@ class Problem(models.Model):
     testcase_visibility_mode = models.CharField(
         verbose_name=_("Testcase visibility"),
         max_length=1,
-        default=ProblemTestcaseAccess.OUT_CONTEST,
+        default=ProblemTestcaseAccess.AUTHOR_ONLY,
         choices=PROBLEM_TESTCASE_ACCESS,
     )
 
