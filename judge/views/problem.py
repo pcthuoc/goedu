@@ -435,7 +435,7 @@ class ProblemList(QueryStringSortMixin, TitleMixin, SolvedProblemMixin, ListView
     manual_sort = frozenset(("name", "group", "solved", "type", "editorial"))
     all_sorts = sql_sort | manual_sort
     default_desc = frozenset(("points", "ac_rate", "user_count"))
-    default_sort = "-date"
+    default_sort = "group"
 
     def get_paginator(
         self, queryset, per_page, orphans=0, allow_empty_first_page=True, **kwargs
