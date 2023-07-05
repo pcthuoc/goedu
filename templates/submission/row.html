@@ -52,7 +52,7 @@
     {% if can_view %}
         <div class="sub-prop"><div>
  {% set time_difference = now - submission.date %}
-{% set is_within_2_days = time_difference.total_seconds() < (2 * 24 * 60 * 60) %}
+{% set is_within_2_days = time_difference.total_seconds() < (10 * 24 * 60 * 60) %}
 
 {% if is_within_2_days or can_edit %}
         <a href="{{ url('submission_status', submission.id) }}">
