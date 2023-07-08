@@ -11,6 +11,9 @@
 {% endblock %}
 
 {% block body %}
-	<br>
-    {{ render_django(flatpage.content) }}
+    <div class="body content-description">
+        {% cache 86400 'flatpage' flatpage.url %}
+            {{ flatpage.content|markdown('flatpage', jax)|reference|str|safe}}
+        {% endcache %}
+    </div>
 {% endblock %}
