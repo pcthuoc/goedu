@@ -192,22 +192,24 @@
             <div id="content-right" class="problems">
                 <div class="info-float">
                     {% include "problem/search-form.html" %}
-                    {% if hot_problems %}
-                        <div class="sidebox" style="margin-bottom: 2em;">
-                            <h3>{{ _('Hot problems') }} <i class="fa fa-fire"></i></h3>
-                            <div class="sidebox-content">
-        			<table class="problem-list" style="width:100%">
-            			{% for problem in hot_problems %}
-                			<tr>
-	            			    <td style="padding-right:7px"><a href="{{ url('problem_detail', problem.code) }}">{{ problem.name }} </a></td>
-		    			        <td style="text-align:right"><span class="problem-points">{{ problem.points|floatformat }}{% if problem.partial %}p{% endif %} </span></td>
-                			</tr>
-            			{% endfor %}
-       				</table>
-                            </div>
+                    {% if new_problems %}
+                    <div class="sidebox">
+                        <h3>{{ _('New problems') }} <i class="fa-solid fa-puzzle-piece"></i>
+                        </h3>
+                        <div class="sidebox-content" style="padding-bottom: 1em;">
+                            <table class="problem-list">
+                                {% for problem in new_problems %}
+                                    <tr><td>
+                                        <a href="{{ url('problem_detail', problem.code) }}">{{ problem.name }}</a>
+                                        {{ problem.date|date(_("M j, Y, G:i")) }}
+                                    </td></tr>
+                                {% endfor %}
+                            </table>
                         </div>
+                    </div>
                     {% endif %}
                 </div>
+                
             </div>
         {% endif %}
         <div id="content-left" class="problems h-scrollable-table">
@@ -333,6 +335,8 @@
                 </tbody>
             </table>
         </div>
+    
+
     </div>
 		{% if page_obj.has_other_pages() %}
        		<div class="bottom-pagination-bar">{% include "list-pages.html" %}</div>

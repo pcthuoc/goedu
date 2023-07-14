@@ -647,12 +647,13 @@ class ProblemList(QueryStringSortMixin, TitleMixin, SolvedProblemMixin, ListView
         context["category"] = self.category
         context["categories"] = ProblemGroup.objects.all()
         context["selected_types"] = self.selected_types
-        context["problem_types"] = ProblemType.objects.all().order_by('id')
+        context["problem_types"] = ProblemType.objects.all().order_by('name')
         context["has_fts"] = settings.ENABLE_FTS
         context["search_query"] = self.search_query
         context["completed_problem_ids"] = self.get_completed_problems()
         context["attempted_problems"] = self.get_attempted_problems()
-
+        context['new_problems'] = Problem.get_public_problems() \
+                                         .order_by('-date', 'code')[:settings.DMOJ_BLOG_NEW_PROBLEM_COUNT]
         if not self.in_contest:
             context["hot_problems"] = self.get_hot_problems()
             (
