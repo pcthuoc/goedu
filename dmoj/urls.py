@@ -216,7 +216,7 @@ urlpatterns = [
         path('/join', contests.ContestJoin.as_view(), name='contest_join'),
         path('/leave', contests.ContestLeave.as_view(), name='contest_leave'),
         path('/stats', contests.ContestStats.as_view(), name='contest_stats'),
-
+        path('/register', contests.ContestRegister.as_view(), name='contest_register'),
         path('/rank/<str:problem>/',
              paged_list_view(ranked_submission.ContestRankedSubmission, 'contest_ranked_submissions')),
 

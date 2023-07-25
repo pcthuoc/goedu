@@ -776,6 +776,8 @@ class ContestForm(ModelForm):
         cleaned_data = super().clean()
         start_time = cleaned_data.get("start_time")
         end_time = cleaned_data.get("end_time")
+        registration_start = cleaned_data.get("registration_start")
+        registration_end = cleaned_data.get("registration_end")
 
         has_long_perm = self.user and self.user.has_perm("judge.long_contest_duration")
         if (
@@ -811,6 +813,8 @@ class ContestForm(ModelForm):
             "name",
             "start_time",
             "end_time",
+            "registration_start",
+            "registration_end",
             "is_visible",
             "use_clarifications",
             "hide_problem_tags",
@@ -842,6 +846,15 @@ class ContestForm(ModelForm):
                 "Users are able to pratice contest problems even if the contest has ended, "
                 "so don't set the contest time too high if you don't really need it."
             ),
+            "registration_start": _(
+                "Chức năng này không bắt buộc, "
+                "cần thiết trong trường hợp muốn set thời gian đăng kí và kết thúc thì hãy dùng nó."
+            ),
+            "registration_end": _(
+                "Chức năng này không bắt buộc, "
+                "người dùng bắt buộc phải để thời gian kết thúc đăng kí nhỏ hơn thời gian kết thúc contest"
+            ),
+
         }
         error_messages = {
             "key": {

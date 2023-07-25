@@ -338,7 +338,9 @@ class Profile(models.Model):
             return settings.DMOJ_THEME_DEFAULT_ACE_THEME.get(self.site_theme)
         # This must be resolved client-side using prefers-color-scheme.
         return None
-
+    @cached_property
+    def registered_contest_ids(self):
+        return set(self.contest_history.filter(virtual=0).values_list('contest_id', flat=True))
     _pp_table = [pow(settings.DMOJ_PP_STEP, i) for i in range(settings.DMOJ_PP_ENTRIES)]
 
     def calculate_points(self, table=_pp_table):

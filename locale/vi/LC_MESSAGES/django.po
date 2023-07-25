@@ -1090,6 +1090,12 @@ msgstr "thời gian bắt đầu"
 #: judge/models/contest.py:85
 msgid "end time"
 msgstr "thời gian kết thúc"
+#: judge/models/contest.py:85
+msgid "registration start time"
+msgstr "thời gian mở đăng ký"
+#: judge/models/contest.py:85
+msgid "registration end time"
+msgstr "thời gian đóng đăng ký"
 
 #: judge/models/contest.py:86 judge/models/problem.py:148
 #: judge/models/problem.py:595

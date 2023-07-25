@@ -195,7 +195,7 @@ class ContestAdmin(NoBatchDeleteMixin, VersionAdmin):
                 )
             },
         ),
-        (_("Scheduling"), {"fields": ("start_time", "end_time", "time_limit")}),
+        (_('Scheduling'), {'fields': ('start_time', 'end_time', 'registration_start', 'registration_end','time_limit')}),
         (
             _("Details"),
             {

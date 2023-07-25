@@ -557,7 +557,7 @@ class ContestAccessCodeForm(forms.Form):
         self.fields["access_code"].widget.attrs.update({"autocomplete": "off"})
 
 
-class ContestJoin(LoginRequiredMixin, ContestMixin, BaseDetailView):
+class ContestJoin(LoginRequiredMixin, ContestMixin, BaseDetailView, View):
     def get(self, request, *args, **kwargs):
         self.object = self.get_object()
         return self.ask_for_access_code()
@@ -597,11 +597,7 @@ class ContestJoin(LoginRequiredMixin, ContestMixin, BaseDetailView):
                 ),
             )
 
-        requires_access_code = (
-            not self.can_edit
-            and contest.access_code
-            and access_code != contest.access_code
-        )
+        requires_access_code = (not self.can_edit and contest.access_code and access_code != contest.access_code)
         if contest.ended:
             if requires_access_code:
                 raise ContestAccessDenied()
@@ -632,23 +628,27 @@ class ContestJoin(LoginRequiredMixin, ContestMixin, BaseDetailView):
         else:
             SPECTATE = ContestParticipation.SPECTATE
             LIVE = ContestParticipation.LIVE
+            can_only_spectate = self.is_editor or self.is_tester
             try:
                 participation = ContestParticipation.objects.get(
-                    contest=contest,
-                    user=profile,
-                    virtual=(SPECTATE if self.is_editor or self.is_tester else LIVE),
+                    contest=contest, user=profile, virtual=(SPECTATE if can_only_spectate else LIVE),
                 )
             except ContestParticipation.DoesNotExist:
+                if contest.require_registration and not contest.can_register and not can_only_spectate:
+                    return generic_message(request, _('Not registered'),
+                                           _('You are not registered for this contest.'))
                 if requires_access_code:
                     raise ContestAccessDenied()
 
                 participation = ContestParticipation.objects.create(
-                    contest=contest,
-                    user=profile,
-                    virtual=(SPECTATE if self.is_editor or self.is_tester else LIVE),
+                    contest=contest, user=profile, virtual=(SPECTATE if can_only_spectate else LIVE),
                     real_start=timezone.now(),
                 )
             else:
+                if participation.pre_registered:
+                    # Pre-registered. First time joining.
+                    participation.real_start = timezone.now()
+                    participation.save()
                 if participation.ended:
                     participation = ContestParticipation.objects.get_or_create(
                         contest=contest,
@@ -685,7 +685,85 @@ class ContestJoin(LoginRequiredMixin, ContestMixin, BaseDetailView):
             },
         )
 
+class ContestRegister(LoginRequiredMixin, ContestMixin, BaseDetailView, View):
+    def get(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        return self.ask_for_access_code()
 
+    def post(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        try:
+            return self.register_contest(request)
+        except ContestAccessDenied:
+            if request.POST.get('access_code'):
+                return self.ask_for_access_code(ContestAccessCodeForm(request.POST))
+            else:
+                return HttpResponseRedirect(request.path)
+
+    def register_contest(self, request, access_code=None):
+        contest = self.object
+        profile = request.profile
+
+        if self.is_editor or self.is_tester:
+            return generic_message(request, _('Cannot register'),
+                                   _('You cannot register for this contest.'))
+
+        if not request.user.is_superuser and contest.banned_users.filter(id=profile.id).exists():
+            return generic_message(request, _('Banned from joining'),
+                                   _('You have been declared persona non grata for this contest. '
+                                     'You are permanently barred from joining this contest.'))
+
+        if not contest.require_registration:
+            return generic_message(request, _('Cannot register'),
+                                   _('Registration is not required for this contest.'))
+
+        if not contest.can_register:
+            return generic_message(request, _('Cannot register'),
+                                   _('You cannot register for this contest now.'))
+
+        requires_access_code = (not self.can_edit and contest.access_code and access_code != contest.access_code)
+        if contest.ended:
+            return generic_message(request, _('Contest has ended'),
+                                   _('"%s" has ended.') % contest.name)
+        else:
+            if self.is_editor or self.is_tester:
+                return generic_message(request, _('Cannot register'),
+                                       _('You cannot register for this contest.'))
+
+            try:
+                ContestParticipation.objects.get(
+                    contest=contest, user=profile, virtual=0,
+                )
+            except ContestParticipation.DoesNotExist:
+                if requires_access_code:
+                    raise ContestAccessDenied()
+
+                ContestParticipation.objects.create(
+                    contest=contest, user=profile, virtual=0,
+                    real_start=datetime(1970, 1, 1, tzinfo=timezone.utc),
+                )
+            else:
+                return generic_message(request, _('Already registered'),
+                                       _('You have already registered for this contest.'))
+
+        contest._updating_stats_only = True
+        contest.update_user_count()
+        return HttpResponseRedirect(reverse('contest_view', args=(contest.key,)))
+
+    def ask_for_access_code(self, form=None):
+        contest = self.object
+        wrong_code = False
+        if form:
+            if form.is_valid():
+                if form.cleaned_data['access_code'] == contest.access_code:
+                    return self.register_contest(self.request, form.cleaned_data['access_code'])
+                wrong_code = True
+        else:
+            form = ContestAccessCodeForm()
+        return render(self.request, 'contest/access_code.html', {
+            'form': form, 'wrong_code': wrong_code,
+            'title': _('Enter access code for "%s"') % contest.name,
+        })
 class ContestLeave(LoginRequiredMixin, ContestMixin, BaseDetailView):
     def post(self, request, *args, **kwargs):
         contest = self.get_object()
