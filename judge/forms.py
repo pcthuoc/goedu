@@ -778,7 +778,7 @@ class ContestForm(ModelForm):
         end_time = cleaned_data.get("end_time")
         registration_start = cleaned_data.get("registration_start")
         registration_end = cleaned_data.get("registration_end")
-
+        # Django will complain if you didn't fill in start_time or end_time, so we don't have to.
         has_long_perm = self.user and self.user.has_perm("judge.long_contest_duration")
         if (
             end_time
@@ -786,7 +786,7 @@ class ContestForm(ModelForm):
             and (end_time - start_time).days > settings.CLAOJ_CONTEST_DURATION_LIMIT
             and not has_long_perm
         ):
-            raise forms.ValidationError(
+            raise ValidationError(
                 _("Contest duration cannot be longer than %d days")
                 % settings.CLAOJ_CONTEST_DURATION_LIMIT,
                 "contest_duration_too_long",
@@ -830,6 +830,12 @@ class ContestForm(ModelForm):
                 format="%Y-%m-%d %H:%M:%S", attrs={"class": "datetimefield"}
             ),
             "end_time": DateTimeInput(
+                format="%Y-%m-%d %H:%M:%S", attrs={"class": "datetimefield"}
+            ),
+            "registration_start": DateTimeInput(
+                format="%Y-%m-%d %H:%M:%S", attrs={"class": "datetimefield"}
+            ),
+            "registration_end": DateTimeInput(
                 format="%Y-%m-%d %H:%M:%S", attrs={"class": "datetimefield"}
             ),
             "description": MartorWidget(

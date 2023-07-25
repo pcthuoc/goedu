@@ -299,6 +299,14 @@ class Migration(migrations.Migration):
                     models.DateTimeField(db_index=True, verbose_name="end time"),
                 ),
                 (
+                    "registration_start",
+                    models.DateTimeField(db_index=True, verbose_name="registration start time"),
+                ),
+                (
+                    "registration_end",
+                    models.DateTimeField(db_index=True, verbose_name="registration end time"),
+                ),
+                (
                     "time_limit",
                     models.DurationField(
                         blank=True, null=True, verbose_name="time limit"
