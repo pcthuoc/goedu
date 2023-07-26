@@ -820,9 +820,12 @@ class ContestForm(ModelForm):
             "hide_problem_tags",
             "hide_problem_authors",
             "scoreboard_visibility",
+            "is_rated",
+            "rate_all",
             "description",
             "is_private",
             "private_contestants",
+
         ]
 
         widgets = {
