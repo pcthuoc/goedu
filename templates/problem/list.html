@@ -334,6 +334,34 @@
                 {% endfor %}
                 </tbody>
             </table>
+            <br><br>
+            {% if has_clarifications %}
+                <div style="font-size: 1.2em; font-style: bold">
+                    <i class="fa fa-question-circle"></i> {{_('Clarifications')}}</div>
+                <table class="table">
+                    <tr>
+                        <th>{{_('Problem')}}</th>
+                        <th>{{_('Time')}}</th>
+                        <th>{{_('Description')}}</th>
+                    </tr>
+                    {% for clarification in clarifications %}
+                        <tr>
+                            <td>
+                                <a href="{{ url('problem_detail', clarification.problem.problem.code) }}"
+                                   class="problem">
+                                    {{ clarification.problem.problem.name }}
+                                </a>
+                            </td>
+                            <td class="time">{{ relative_time(clarification.date) }}</td>
+                            <td><p style="overflow-wrap: break-word; word-break: break-word">{{clarification.description}}</p></td>
+                        </tr>
+                    {% endfor %}
+                </table>
+            {% else %}
+                <p style="font-style: italic; text-align: center">
+                    {{ _('No clarifications have been made at this time.') }}</center>
+                </p>
+            {% endif %}      
         </div>
     
 
