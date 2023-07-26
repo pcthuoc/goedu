@@ -3,8 +3,7 @@
 {% block title_ruler %}{% endblock %}
 
 {% block title_row %}
-    {% set tab = 'detail' %}
-    {% set title = contest.name %}
+    {% set tab = '' %}
     {% include "contest/contest-tabs.html" %}
     {% if contest.is_organization_private %}
         <span class="organization-tags">
@@ -198,6 +197,7 @@
             </div>
         {% endif %}
     </div>
+    
 
     {% set in_contest = contest.is_in_contest(request.user) %}
     {% if in_contest or contest.ended or request.user.is_superuser or is_editor or is_tester %}

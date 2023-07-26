@@ -362,6 +362,7 @@ class ContestMixin(object):
 
 
 class ContestDetail(ContestMixin, TitleMixin, CommentedDetailView):
+
     template_name = "contest/contest.html"
 
     def is_comment_locked(self):
