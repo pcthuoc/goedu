@@ -345,6 +345,14 @@ class Migration(migrations.Migration):
                     ),
                 ),
                 (
+                    "push_announcements",
+                    models.BooleanField(
+                        default=True,
+                        help_text="Notify users when there are new announcements.",
+                        verbose_name="push announcements",
+                    ),
+                ),      
+                (
                     "rate_all",
                     models.BooleanField(
                         default=False,

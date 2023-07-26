@@ -182,7 +182,7 @@ class Contest(models.Model):
     push_announcements = models.BooleanField(
         verbose_name=_("push announcements"),
         help_text=_("Notify users when there are new announcements."),
-        default=False,
+        default=True,
     )
     rating_floor = models.IntegerField(
         verbose_name=("rating floor"),
