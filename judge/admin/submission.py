@@ -88,6 +88,7 @@ class ContestSubmissionInline(admin.StackedInline):
     def formfield_for_dbfield(self, db_field, **kwargs):
         submission = kwargs.pop("obj", None)
         label = None
+        submission = kwargs.pop('obj', None)
         if submission:
             if db_field.name == "participation":
                 kwargs["queryset"] = ContestParticipation.objects.filter(
