@@ -70,6 +70,7 @@
         {% if INLINE_JQUERY %}
             <script src="{{ static('libs/jquery-3.4.1.min.js') }}"></script>
         {% endif %}
+        <script src="{{ static('libs/popper.min.js') }}"></script>   
         <script src="{{ static('libs/jquery-cookie.js') }}"></script>
         <script src="{{ static('libs/jquery-taphold.js') }}"></script>
         <script src="{{ static('libs/jquery.unveil.js') }}"></script>
@@ -246,9 +247,11 @@
             <a id="flag_en" href="#" onclick="submmit_language('en')" style="margin-right: 5px; margin-top: 4px;">
                 <img src="{{ static('icons/gb_flag.svg') }}" alt="EN" height="24">
             </a>
+            <div class="popper-arrow" data-popper-arrow></div>
             {% if request.user.is_authenticated %}
                 <ul>
                     <li>
+                        <div class="popper-arrow" data-popper-arrow></div>
                         <a href="{{ url('user_page') }}">
                             <span>
                                 <img src="{{ gravatar(request.user, 32) }}" height="24" width="24">{# -#}
@@ -337,7 +340,8 @@
     {% endif %}
 
     {% block bodyend %}{% endblock %}
-
+    <script src="{{ static('katex_config.js') }}"></script>
+    {% include "katex-load.html" %}
     <footer>
         <span id="footer-content">
             <br>

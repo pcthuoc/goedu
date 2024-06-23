@@ -33,7 +33,17 @@ else:
                 "https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.0/es5/tex-chtml.min.js",
                 "pagedown_math.js",
             ]
-
+    class KatexPagedownWidget(PagedownWidget):
+        class Media:
+            css = {
+                "all": ["https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css"]
+            }
+            js = [
+                "katex_config.js",
+                "https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js",
+                "https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js",
+                "pagedown_math.js",
+            ]
     class HeavyPreviewPageDownWidget(PagedownWidget):
         def __init__(self, *args, **kwargs):
             kwargs.setdefault("template", "pagedown.html")

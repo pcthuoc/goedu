@@ -34,9 +34,12 @@ celery
 ansi2html @ git+https://github.com/DMOJ/ansi2html.git
 sqlparse
 lupa
+websocket-client
+redis
 martor @ git+https://github.com/VNOI-Admin/martor.git
 netaddr
 webauthn<1
+markdown
 bleach[css]
 markdown2 @ git+https://github.com/VNOI-Admin/python-markdown2.git
 django-admin-sortable2<2
@@ -45,3 +48,12 @@ icalendar
 importlib-metadata<5
 lxml_html_clean
 lxml
+beautifulsoup4
+pre-commit
+mdx-breakless-lists
+pymdown-extensions
+django-ratelimit
+python-memcached<1.60
+numpy
+pandas
+markdown_extensions

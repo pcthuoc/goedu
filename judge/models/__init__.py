@@ -7,6 +7,8 @@ from judge.models.choices import (
     TIMEZONE,
 )
 from judge.models.comment import Comment, CommentLock, CommentVote
+from judge.models.message import PrivateMessage, PrivateMessageThread
+
 from judge.models.contest import (
     Contest,
     ContestAnnouncement,
@@ -57,7 +59,7 @@ from judge.models.submission import (
     SubmissionTestCase,
 )
 from judge.models.ticket import GeneralIssue, Ticket, TicketMessage
-
+from judge.models.notification import Notification, NotificationProfile
 revisions.register(Profile, exclude=["points", "last_access", "ip", "rating"])
 revisions.register(Problem, follow=["language_limits"])
 revisions.register(LanguageLimit)

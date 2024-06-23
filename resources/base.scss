@@ -200,16 +200,14 @@ hr {
 }
 
 #content {
-    margin: 50px auto auto;
-
-    // Header
-    max-width: 1300px;
-    height: 100%;
-    min-height: 25em;
-    display: block;
+    margin: 50px 5% 0 5%; /* 10% lề trái và 10% lề phải */
+    width: 90%; /* Chiếm 80% chiều rộng của viewport */
+    min-width: 300px; /* Chiều rộng tối thiểu */
+    height: 100%; /* Chiều cao 100% của viewport */
+    min-height: 25em; /* Chiều cao tối thiểu */
 
     .title {
-        color: $color_primary75;
+        color: $color_primary75; /* Màu chữ cho .title */
     }
 }
 
@@ -326,10 +324,10 @@ noscript #noscript {
     margin: 0 auto;
     background: $color_pageBg;
 }
-
 #content-body {
-    padding-top: 0.25em;
-    padding-bottom: 6.5em;
+    padding-top: 0.25em; /* Khoảng cách phía trên */
+    padding-bottom: 6.5em; /* Khoảng cách phía dưới */
+    padding-right: 5%; /* Lề bên phải là 5% của chiều rộng của phần tử */
 }
 
 // Offset the footer

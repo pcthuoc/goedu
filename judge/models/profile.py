@@ -26,7 +26,7 @@ from judge.models.runtime import Language
 from judge.ratings import rating_class
 from judge.utils.float_compare import float_compare_equal
 from judge.utils.two_factor import webauthn_decode
-
+from judge.caching import cache_wrapper
 __all__ = ["Organization", "Profile", "OrganizationRequest", "WebAuthnCredential"]
 
 
@@ -309,7 +309,14 @@ class Profile(models.Model):
         verbose_name=_("display name override"),
         help_text=_("Name displayed in place of username"),
     )
+    @cached_property
+    def _cached_info(self):
+        return _get_basic_info(self.id)
+    @cached_property
+    def count_unread_chat_boxes(self):
+        from chat_box.utils import get_unread_boxes
 
+        return get_unread_boxes(self)
     @cached_property
     def organization(self):
         # We do this to take advantage of prefetch_related
@@ -500,7 +507,9 @@ class Profile(models.Model):
 
     def __str__(self):
         return self.user.username
-
+    @classmethod
+    def prefetch_profile_cache(self, profile_ids):
+        _get_basic_info.prefetch_multi([(pid,) for pid in profile_ids])
     @classmethod
     def get_user_css_class(
         cls, display_rank, rating, rating_colors=settings.DMOJ_RATING_COLORS
@@ -601,3 +610,37 @@ class OrganizationRequest(models.Model):
     class Meta:
         verbose_name = _("organization join request")
         verbose_name_plural = _("organization join requests")
+
+
+@cache_wrapper(prefix="Pgbi3", expected_type=dict)
+def _get_basic_info(profile_id):
+    profile = (
+        Profile.objects.select_related("user")
+        .only(
+            "id",
+            "mute",
+            "profile_image",
+            "user__username",
+            "user__email",
+            "user__first_name",
+            "user__last_name",
+            "display_rank",
+            "rating",
+        )
+        .get(id=profile_id)
+    )
+    user = profile.user
+    res = {
+        "email": user.email,
+        "username": user.username,
+        "mute": profile.mute,
+        "first_name": user.first_name or None,
+        "last_name": user.last_name or None,
+        "profile_image_url": profile.profile_image.url
+        if profile.profile_image
+        else None,
+        "display_rank": profile.display_rank,
+        "rating": profile.rating,
+    }
+    res = {k: v for k, v in res.items() if v is not None}
+    return res

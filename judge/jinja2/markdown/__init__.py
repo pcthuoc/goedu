@@ -17,7 +17,14 @@ from judge.utils.camo import client as camo_client
 from judge.utils.texoid import TEXOID_ENABLED, TexoidRenderer
 from .bleach_whitelist import all_styles, mathml_attrs, mathml_tags
 from .. import registry
+from .. import registry
+from judge.markdown import markdown as _markdown
 
+
+@registry.filter
+def markdown(value, lazy_load=False):
+    return _markdown(value, lazy_load)
+    
 logger = logging.getLogger("judge.html")
 
 NOFOLLOW_WHITELIST = settings.NOFOLLOW_EXCLUDED

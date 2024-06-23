@@ -1,5 +1,7 @@
+import chat_box.views as chat
 from django.conf import settings
 from django.contrib import admin
+from django.conf.urls import include, url
 from django.contrib.auth import views as auth_views
 from django.contrib.sitemaps.views import sitemap
 from django.http import Http404, HttpResponsePermanentRedirect
@@ -19,11 +21,11 @@ from judge.views import TitledTemplateView, api, blog, comment, contests, langua
 from judge.views.problem_data import ProblemDataView, ProblemSubmissionDiff, \
     problem_data_file, problem_init_view
 from judge.views.register import ActivationView, RegistrationView
-from judge.views.select2 import AssigneeSelect2View, CommentSelect2View, ContestSelect2View, \
+from judge.views.select2 import AssigneeSelect2View,     ChatUserSearchSelect2View,CommentSelect2View, ContestSelect2View, \
     ContestUserSearchSelect2View, OrganizationSelect2View, OrganizationUserSelect2View, ProblemSelect2View, \
     TicketUserSelect2View, UserSearchSelect2View, UserSelect2View
 from judge.views.widgets import martor_image_uploader
-
+from django.contrib.auth.decorators import login_required
 admin.autodiscover()
 
 register_patterns = [
@@ -205,6 +207,47 @@ urlpatterns = [
         path('/ajax', contests.ContestTagDetailAjax.as_view(), name='contest_tag_ajax'),
     ])),
 
+    url(
+        r"^chat/",
+        include(
+            [
+                url(
+                    r"^(?P<room_id>\d*)$",
+                    login_required(chat.ChatView.as_view()),
+                    name="chat",
+                ),
+                url(r"^delete/$", chat.delete_message, name="delete_chat_message"),
+                url(r"^mute/$", chat.mute_message, name="mute_chat_message"),
+                url(r"^post/$", chat.post_message, name="post_chat_message"),
+                url(r"^ajax$", chat.chat_message_ajax, name="chat_message_ajax"),
+                url(
+                    r"^online_status/ajax$",
+                    chat.online_status_ajax,
+                    name="online_status_ajax",
+                ),
+                url(
+                    r"^get_or_create_room$",
+                    chat.get_or_create_room,
+                    name="get_or_create_room",
+                ),
+                url(
+                    r"^update_last_seen$",
+                    chat.update_last_seen,
+                    name="update_last_seen",
+                ),
+                url(
+                    r"^online_status/user/ajax$",
+                    chat.user_online_status_ajax,
+                    name="user_online_status_ajax",
+                ),
+                url(
+                    r"^toggle_ignore/(?P<user_id>\d+)$",
+                    chat.toggle_ignore,
+                    name="toggle_ignore",
+                ),
+            ]
+        ),
+    ),
     path('contest/<str:contest>', include([
         path('', contests.ContestDetail.as_view(), name='contest_view'),
         path('/edit', contests.EditContest.as_view(), name='contest_edit'),
@@ -325,6 +368,7 @@ urlpatterns = [
                  name='contest_user_search_select2_ajax'),
             path('ticket_user', TicketUserSelect2View.as_view(), name='ticket_user_select2_ajax'),
             path('ticket_assignee', AssigneeSelect2View.as_view(), name='ticket_assignee_select2_ajax'),
+            path('user_search_chat', ChatUserSearchSelect2View.as_view(),  name="chat_user_search_select2_ajax")
         ])),
 
         path('preview/', include([

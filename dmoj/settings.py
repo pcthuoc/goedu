@@ -27,7 +27,8 @@ SECRET_KEY = "5*9f5q57mqmlz2#f$x1h76&jxy#yortjl1v+l*6hd18$d*yx#0"
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
-
+# Chat
+CHAT_SECRET_KEY = "QUdVFsxk6f5-Hd8g9BXv81xMqvIZFRqMl-KbRzztW-U="
 ALLOWED_HOSTS = []
 
 SITE_ID = 1
@@ -316,6 +317,7 @@ INSTALLED_APPS += (
     "django_jinja",
     "martor",
     "adminsortable2",
+    "chat_box",
 )
 
 MIDDLEWARE = (
