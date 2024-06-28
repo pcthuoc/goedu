@@ -21,6 +21,14 @@
     font-size: 1.3em;
     float: right;
 }
+.control-button {
+    color: black !important;
+    border: 0;
+}
+
+.control-button:hover {
+    background: gray;
+}
 
 .django-ace-widget>div {
     border: 1px solid $color_primary25;
@@ -46,6 +54,7 @@
     border: none;
     transition: background 0.1s;
 
+    
     // 4k hack
     font-size: $base_font_size;
 

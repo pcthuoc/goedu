@@ -57,7 +57,16 @@ td.rating {
         color: $color_primary75;
     }
 }
+.user-with-img {
+    display: inline-flex;
+    gap: 0.5em;
+    align-items: center;
 
+    .user-img {
+        height: 2em;
+        width: 2em;
+    }
+}
 .users-table, .organization-table {
     tr {
         transition: background-color linear .1s;

@@ -25,57 +25,6 @@ def _get_organization_user_queryset(org_pk, term):
         | Q(user__first_name__icontains=term.strip())
     )
     return qs
-class UserSearchSelect2View(BaseListView):
-    paginate_by = 20
-
-    def get_queryset(self):
-        return _get_user_queryset(self.term)
-
-    def get_json_result_from_object(self, user_tuple):
-        pk, username, email, display_rank, profile_image = user_tuple
-        return {
-            "text": username,
-            "id": username,
-            "gravatar_url": gravatar(
-                None,
-                self.gravatar_size,
-                self.gravatar_default,
-                self.get_profile_image_url(profile_image),
-                email,
-            ),
-            "display_rank": display_rank,
-        }
-
-    def get(self, request, *args, **kwargs):
-        self.request = request
-        self.kwargs = kwargs
-        self.term = kwargs.get("term", request.GET.get("term", ""))
-        self.gravatar_size = request.GET.get("gravatar_size", 128)
-        self.gravatar_default = request.GET.get("gravatar_default", None)
-
-        self.object_list = self.get_queryset().values_list(
-            "pk", "user__username", "user__email", "display_rank", "profile_image"
-        )
-
-        context = self.get_context_data()
-
-        return JsonResponse(
-            {
-                "results": [
-                    self.get_json_result_from_object(user_tuple)
-                    for user_tuple in context["object_list"]
-                ],
-                "more": context["page_obj"].has_next(),
-            }
-        )
-
-    def get_name(self, obj):
-        return str(obj)
-
-    def get_profile_image_url(self, profile_image):
-        if profile_image:
-            return urljoin(settings.MEDIA_URL, profile_image)
-        return None
 
 class Select2View(BaseListView):
     paginate_by = 20
@@ -101,23 +50,6 @@ class Select2View(BaseListView):
 
     def get_name(self, obj):
         return str(obj)
-class ChatUserSearchSelect2View(UserSearchSelect2View):
-    def get_json_result_from_object(self, user_tuple):
-        if not self.request.user.is_authenticated:
-            raise Http404()
-        pk, username, email, display_rank, profile_image = user_tuple
-        return {
-            "text": username,
-            "id": encrypt_url(self.request.profile.id, pk),
-            "gravatar_url": gravatar(
-                None,
-                self.gravatar_size,
-                self.gravatar_default,
-                self.get_profile_image_url(profile_image),
-                email,
-            ),
-            "display_rank": display_rank,
-        }
 
 
 class UserSelect2View(Select2View):
@@ -275,3 +207,20 @@ class AssigneeSelect2View(UserSearchSelect2View):
         return Profile.objects.filter(
             assigned_tickets__isnull=False, user__username__icontains=self.term
         ).distinct()
+class ChatUserSearchSelect2View(UserSearchSelect2View):
+    def get_json_result_from_object(self, user_tuple):
+        if not self.request.user.is_authenticated:
+            raise Http404()
+        pk, username, email, display_rank, profile_image = user_tuple
+        return {
+            "text": username,
+            "id": encrypt_url(self.request.profile.id, pk),
+            "gravatar_url": gravatar(
+                None,
+                self.gravatar_size,
+                self.gravatar_default,
+                self.get_profile_image_url(profile_image),
+                email,
+            ),
+            "display_rank": display_rank,
+        }

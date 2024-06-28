@@ -25,6 +25,7 @@ def decrypt_url(message_encrypted):
         creator_id, other_id = dec_message.split("_")
         return int(creator_id), int(other_id)
     except Exception as e:
+        print(f"Error decrypting URL: {str(e)}")
         return None, None
 
 

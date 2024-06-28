@@ -24,6 +24,7 @@ from django.db.models import (
     F,
     Max,
 )
+from django.db.models import Q
 from django.db.models.functions import Coalesce
 from django.utils import timezone
 from django.contrib.auth.decorators import login_required
@@ -433,8 +434,8 @@ def get_status_context(profile, include_ignored=False):
     recent_rooms = [int(i["id"]) for i in recent_profile]
     Room.prefetch_room_cache(recent_rooms)
 
-    admin_list = (
-        queryset.filter(display_rank="admin")
+    admin_teacher_list = (
+        queryset.filter(Q(display_rank="admin") | Q(display_rank="teacher"))
         .exclude(id__in=recent_profile_ids)
         .values_list("id", flat=True)
     )
@@ -446,7 +447,7 @@ def get_status_context(profile, include_ignored=False):
         },
         {
             "title": _("Admin"),
-            "user_list": get_online_status(profile, admin_list),
+            "user_list": get_online_status(profile, admin_teacher_list),
         },
     ]
 
@@ -471,6 +472,7 @@ def get_room(user_one, user_two):
     return room
 
 
+
 @login_required
 def get_or_create_room(request):
     if request.method == "GET":
@@ -478,28 +480,41 @@ def get_or_create_room(request):
     elif request.method == "POST":
         decrypted_other_id = request.POST.get("other")
     else:
-        return HttpResponseBadRequest()
+        return HttpResponseBadRequest("Invalid request method.")
+    print("hihih")
+    print(decrypted_other_id)
+    print("hihih")
+    if not decrypted_other_id:
+        return HttpResponseBadRequest("Missing 'other' parameter.")
 
     request_id, other_id = decrypt_url(decrypted_other_id)
-    if not other_id or not request_id or request_id != request.profile.id:
-        return HttpResponseBadRequest()
+    if request_id is None or other_id is None:
+        return HttpResponseBadRequest("Invalid 'other' parameter or mismatched IDs.")
+
+    if request_id != request.profile.id:
+        return HttpResponseBadRequest("Request ID does not match profile ID.")
 
     try:
         other_user = Profile.objects.get(id=int(other_id))
-    except Exception:
-        return HttpResponseBadRequest()
+    except Profile.DoesNotExist:
+        return HttpResponseBadRequest("User does not exist.")
+    except ValueError:
+        return HttpResponseBadRequest("Invalid user ID.")
 
     user = request.profile
 
     if not other_user or not user:
-        return HttpResponseBadRequest()
-    # TODO: each user can only create <= 300 rooms
-    room = get_room(other_user, user)
-    for u in [other_user, user]:
-        user_room, created = UserRoom.objects.get_or_create(user=u, room=room)
-        if created:
-            user_room.last_seen = timezone.now()
-            user_room.save()
+        return HttpResponseBadRequest("User or other_user is not valid.")
+
+    try:
+        room = get_room(other_user, user)
+        for u in [other_user, user]:
+            user_room, created = UserRoom.objects.get_or_create(user=u, room=room)
+            if created:
+                user_room.last_seen = timezone.now()
+                user_room.save()
+    except Exception as e:
+        return HttpResponseBadRequest(f"Error creating or retrieving room: {str(e)}")
 
     room_url = reverse("chat", kwargs={"room_id": room.id})
     if request.method == "GET":
@@ -511,8 +526,6 @@ def get_or_create_room(request):
             }
         )
     return HttpResponseRedirect(room_url)
-
-
 def get_unread_count(rooms, user):
     if rooms:
         return UserRoom.objects.filter(

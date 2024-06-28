@@ -43,16 +43,19 @@
               {{user.unread_count}}
             </span>
           {% endif %}
-          <div style="margin-right: 0.3em; position: relative;">
-            <div class="control-button small setting-button">
+          <!-- <div class="control-wrapper" style="margin-right: 0.3em; position: relative;">
+            <div id="control-button-{{ user.user.id }}" class="control-button small setting-button">
               <i class="fa fa-ellipsis-h"></i>
             </div>
-            <div class="setting-content">
-              <a href="{{url('toggle_ignore', user.user.id)}}" class="red">
-                {{_('Ignore')}}
+            <div id="setting-content-{{ user.user.id }}" class="setting-content">
+              <a href="{{ url('toggle_ignore', user.user.id) }}" class="red">
+                Tắt thông báo
               </a>
             </div>
           </div>
+           -->
+          
+                    
         </li>
       {% endfor %}
     </ul>

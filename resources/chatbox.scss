@@ -1,5 +1,5 @@
 @import "vars";
-$navbar_height: 50px;
+$navbar_height: 100px;
 $navbar_height_mobile: 36px;
 .chat {
     background: white;
@@ -79,12 +79,15 @@ $navbar_height_mobile: 36px;
 @media (min-width: 800px) {
     #chat-container {
         display: flex;
-        width: 80%;
-        height: calc(100vh - $navbar_height);
-        border: 1px solid #ccc;
-        /*border-radius: 0 4px 0 0;*/
+        height: calc(85vh);
+        padding: 1em 1em 0 1.5em;
+        border: 1px solid #c8ccd0;
         border-bottom: 0;
+        border-radius: 10px; // Tạo bo góc với bán kính 10px
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); // Thêm hiệu ứng bóng đổ
     }
+    
+    
     #chat-online {
         margin: 0;
         min-width: 30%;

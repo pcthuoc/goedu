@@ -62,13 +62,13 @@
     <div id="chat-container">
       <div id="chat-online" class="chat-left-panel sidebox">
         <div id="chat-online-content">
-          <div id="search-container">
+          <!-- <div id="search-container">
             <form id="chat-search-form" name="form" action="{{ url('get_or_create_room') }}" method="post">
               {% csrf_token %}
               <input id="search-handle" type="text" name="search"
                 placeholder="{{ _('Search by handle...') }}">
             </form>
-          </div>
+          </div> -->
           <div id="chat-online-list">
             {% include "chat/online_status.html" %}
           </div>
@@ -98,5 +98,6 @@
           <emoji-picker></emoji-picker>
         </div>
       </div>
-  </div>
+  
+</div>
 {% endblock body %}

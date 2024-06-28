@@ -17,6 +17,45 @@ msgstr ""
 "X-Crowdin-File: django.po\n"
 "X-Crowdin-File-ID: 10\n"
 
+
+
+
+#: templates/chat/message.html:23
+msgid "Mute"
+msgstr ""
+
+#: templates/chat/message_list.html:8
+msgid "You are connect now. Say something to start the conversation."
+msgstr "Các bạn đã kết nối. Nhắn gì đó để bắt đầu cuộc trò chuyện."
+
+#: templates/chat/online_status.html:6
+#: templates/chat/user_online_status.html:21
+msgid "Lobby"
+msgstr "Sảnh chung"
+
+#: templates/chat/online_status.html:52
+#: templates/chat/user_online_status.html:39
+msgid "Ignore"
+msgstr "Tắt thông báo"
+
+#: templates/chat/user_online_status.html:26
+#, python-brace-format
+msgid "Last online on {time}"
+msgstr "Trực tuyến vào {time}"
+
+#: templates/chat/user_online_status.html:37
+msgid "Unignore"
+msgstr "Mở lại thông báo"
+
+#: templates/chat/user_online_status.html:45
+msgid "users are online"
+msgstr "người đang trực tuyến"
+
+#: chat_box/views.py:445
+msgid "Recent"
+msgstr "Gần đây"
+
+
 #: dmoj/settings.py:72
 msgid "Normal User"
 msgstr "Người dùng phổ thông"
