@@ -1,7 +1,7 @@
 <script type="text/javascript">
   let isMobile = window.matchMedia("only screen and (max-width: 799px)").matches;
 
-  function load_next_page(last_id, refresh_html=false) {
+  function load_next_page(last_id, refresh_html = false) {
     if (refresh_html) {
       window.lock = true;
       $('#chat-log').html('');
@@ -12,42 +12,42 @@
       'only_messages': true,
     }
     $.get("{{ url('chat', '') }}" + window.room_id, param)
-      .fail(function() {
-      console.log("Fail to load page, last_id = " + last_id);
-      window.lock = false;
-    })
-      .done(function(data) {
-      if (refresh_html) {
-        $('#chat-box').scrollTop($('#chat-box')[0].scrollHeight);
-      }
-      var time = refresh_html ? 0 : 200;
-
-      setTimeout(function() {
-        $(".has_next").remove();
-        let $chat_box = $('#chat-box');
-        let lastMsgPos = scrollTopOfBottom($chat_box)
-
-        $('#loader').hide();
-
+      .fail(function () {
+        console.log("Fail to load page, last_id = " + last_id);
+        window.lock = false;
+      })
+      .done(function (data) {
         if (refresh_html) {
-          $('#chat-log').append(data);
-        }
-        else {
-          $('#chat-log').prepend(data);
-        }
-
-        postProcessMessages();
-
-        if (!refresh_html) {
-          $chat_box.scrollTop(scrollTopOfBottom($chat_box) - lastMsgPos);
-        }
-        else {
           $('#chat-box').scrollTop($('#chat-box')[0].scrollHeight);
         }
-        window.lock = false;
-        window.has_next = parseInt($(".has_next").attr("value"));
-      }, time);
-    })
+        var time = refresh_html ? 0 : 200;
+
+        setTimeout(function () {
+          $(".has_next").remove();
+          let $chat_box = $('#chat-box');
+          let lastMsgPos = scrollTopOfBottom($chat_box)
+
+          $('#loader').hide();
+
+          if (refresh_html) {
+            $('#chat-log').append(data);
+          }
+          else {
+            $('#chat-log').prepend(data);
+          }
+
+          postProcessMessages();
+
+          if (!refresh_html) {
+            $chat_box.scrollTop(scrollTopOfBottom($chat_box) - lastMsgPos);
+          }
+          else {
+            $('#chat-box').scrollTop($('#chat-box')[0].scrollHeight);
+          }
+          window.lock = false;
+          window.has_next = parseInt($(".has_next").attr("value"));
+        }, time);
+      })
   }
 
   function postProcessMessages() {
@@ -62,36 +62,37 @@
   }
 
   function scrollContainer(container, loader) {
-    container.scroll(function() {
+    container.scroll(function () {
       if (container.scrollTop() == 0) {
         if (!window.lock && window.has_next) {
           loader.show();
-          var message_ids = $('.message').map(function() {
+          var message_ids = $('.message').map(function () {
             return parseInt($(this).attr('message-id'));
           }).get();
           load_next_page(Math.min(...message_ids));
         }
       }
-    })}
+    })
+  }
 
-  function refresh_status(refresh_chat_info=false) {
+  function refresh_status(refresh_chat_info = false) {
     $.get("{{url('online_status_ajax')}}")
-      .fail(function() {
-      console.log("Fail to get online status");
-    })
-      .done(function(data) {
-      if (data.status == 403) {
-        console.log("Fail to retrieve data");
-      }
-      else {
-        $('#chat-online-list').html(data).find('.toggle').each(function () {
-          register_toggle($(this));
-        });
-        register_click_space();
-        register_setting(false);
-        color_selected_room();
-      }
-    })
+      .fail(function () {
+        console.log("Fail to get online status");
+      })
+      .done(function (data) {
+        if (data.status == 403) {
+          console.log("Fail to retrieve data");
+        }
+        else {
+          $('#chat-online-list').html(data).find('.toggle').each(function () {
+            register_toggle($(this));
+          });
+          register_click_space();
+          register_setting(false);
+          color_selected_room();
+        }
+      })
 
     var data = {
       'user': window.other_user_id,
@@ -102,14 +103,14 @@
     }
 
     $.get("{{url('user_online_status_ajax')}}", data)
-      .fail(function() {
-      console.log("Fail to get user online status");
-    })
-      .done(function(data) {
-      $('#chat-info').html(data);
-      register_time($('.time-with-rel'));
-      register_setting(true);
-    })
+      .fail(function () {
+        console.log("Fail to get user online status");
+      })
+      .done(function (data) {
+        $('#chat-info').html(data);
+        register_time($('.time-with-rel'));
+        register_setting(true);
+      })
   }
 
   function add_message(data) {
@@ -161,11 +162,11 @@
         },
         success: function (data) {
           var $body_block = $(data).find('.body-block');
-          if ($('#message-'+tmp_id).length) {
-            $('#message-'+tmp_id).replaceWith(data);
+          if ($('#message-' + tmp_id).length) {
+            $('#message-' + tmp_id).replaceWith(data);
           }
-          else if ($('#body-block-'+tmp_id).length) {
-            $('#body-block-'+tmp_id).replaceWith($body_block);
+          else if ($('#body-block-' + tmp_id).length) {
+            $('#body-block-' + tmp_id).replaceWith($body_block);
           }
           else {
             add_new_message(message, room, true);
@@ -175,7 +176,7 @@
         },
         error: function (data) {
           console.log('Fail to check message');
-          var $body = $('#body-block-'+tmp_id + ' p');
+          var $body = $('#body-block-' + tmp_id + ' p');
           $body.css('text-decoration', 'line-through');
           $body.css('text-decoration-color', 'red');
         }
@@ -190,14 +191,14 @@
       time: null,
       $content: null
     };
-    $('.body-message').each(function() {
+    $('.body-message').each(function () {
       var username = $(this).find(".username a").text().trim();
       var $body = $(this).find(".content-message .body-block");
       var time = moment($(this).find(".time-with-rel").attr('data-iso'));
       var $content = $(this).children('.content-message');
 
       if (username == window.user.name) {
-        $(this).find('.message-text').each(function() {
+        $(this).find('.message-text').each(function () {
           $(this).removeClass('message-text-other').addClass('message-text-myself');
         });
       }
@@ -227,33 +228,33 @@
 
   function submit_chat() {
     {% if last_msg and not request.profile.mute %}
-      if ($("#chat-input").val().trim()) {
-        $('#chat-input-container').height('auto');
-        var body = $('#chat-input').val().trim();
+    if ($("#chat-input").val().trim()) {
+      $('#chat-input-container').height('auto');
+      var body = $('#chat-input').val().trim();
 
-        var message = {
-          body: body,
-          room: window.room_id,
-          tmp_id: Date.now(),
-        };
+      var message = {
+        body: body,
+        room: window.room_id,
+        tmp_id: Date.now(),
+      };
 
-        $('#chat-input').val('');
-        $('#chat-input').css('height', '70%');
+      $('#chat-input').val('');
+      $('#chat-input').css('height', '70%');
 
-        add_message_from_template(body, message.tmp_id);
+      add_message_from_template(body, message.tmp_id);
 
-        $.post("{{ url('post_chat_message') }}", message)
-          .fail(function(res) {
+      $.post("{{ url('post_chat_message') }}", message)
+        .fail(function (res) {
           console.log('Fail to send message');
-          var $body = $('#message-text-'+ message.tmp_id);
+          var $body = $('#message-text-' + message.tmp_id);
           $body.css('text-decoration', 'line-through');
           $body.css('background', 'red');
         })
-          .done(function(res, status) {
+        .done(function (res, status) {
           $('#empty_msg').hide();
           $('#chat-input').focus();
         })
-      }
+    }
     {% endif %}
   }
 
@@ -318,16 +319,16 @@
     window.lock_click_space = true;
     if (encrypted_user) {
       $.get("{{url('get_or_create_room')}}" + `?other=${encrypted_user}`)
-        .done(function(data) {
-        window.room_id = data.room;
-        window.other_user_id = data.other_user_id;
-        color_selected_room();
-        callback();
-        $('#chat-input').attr('maxlength', 5000);
-      })
-        .fail(function() {
-        console.log('Fail to get_or_create_room');
-      })
+        .done(function (data) {
+          window.room_id = data.room;
+          window.other_user_id = data.other_user_id;
+          color_selected_room();
+          callback();
+          $('#chat-input').attr('maxlength', 5000);
+        })
+        .fail(function () {
+          console.log('Fail to get_or_create_room');
+        })
     }
     else {
       window.room_id = '';
@@ -340,7 +341,7 @@
   }
 
   function register_click_space() {
-    $('.click_space').on('click', function(e) {
+    $('.click_space').on('click', function (e) {
       if ($(this).attr('id') == 'click_space_' + window.other_user_id) {
         show_right_panel();
         return;
@@ -348,7 +349,7 @@
       var other_user = $(this).attr('value');
       load_room(other_user);
     });
-    $('#lobby_row').on('click', function(e) {
+    $('#lobby_row').on('click', function (e) {
       if (window.room_id) {
         load_room(null);
       }
@@ -364,12 +365,12 @@
     };
 
     $.post("{{ url('update_last_seen') }}", data)
-      .fail(function(data) {
-      console.log('Fail to update last seen');
-    })
-      .done(function(data) {
+      .fail(function (data) {
+        console.log('Fail to update last seen');
+      })
+      .done(function (data) {
 
-    })
+      })
   }
 
   function remove_unread_current_user() {
@@ -383,22 +384,22 @@
 
   function register_setting(is_on_user_status_bar) {
     let $setting_button = is_on_user_status_bar ? $('.user-setting-button') : $('.setting-button');
-    $setting_button.on('click', function(e) {
+    $setting_button.on('click', function (e) {
       e.stopPropagation();
       $('.setting-content').not($(this).siblings('.setting-content')).hide();
       $(this).siblings('.setting-content').toggle();
     });
-    $('.setting-content a').on('click', function(e) {
+    $('.setting-content a').on('click', function (e) {
       e.stopPropagation();
       var href = $(this).attr('href');
       href += '?next=' + window.location.pathname;
       $(this).attr('href', href);
     })
-    $(document).on('click', function() {
+    $(document).on('click', function () {
       $('.setting-content').hide();
     });
   }
-  $(function() {
+  $(function () {
     $('#loader').hide();
     update_last_seen();
     merge_authors();
@@ -407,58 +408,58 @@
     scrollContainer($('#chat-box'), $('#loader'))
 
     {% if request.user.is_staff %}
-      $(document).on("click", ".chat_remove", function() {
+    $(document).on("click", ".chat_remove", function () {
+      var elt = $(this);
+      $.ajax({
+        url: "{{ url('delete_chat_message') }}",
+        type: 'post',
+        data: {
+          message: elt.attr('value'),
+        },
+        dataType: 'json',
+        success: function (data) {
+          var $block = elt.parent();
+          if ($block.parent().find('.body-block').length > 1) {
+            $block.remove();
+          }
+          else {
+            elt.closest('li').remove();
+          }
+        },
+        fail: function (data) {
+          console.log('Fail to delete');
+        },
+      });
+    });
+    $(document).on("click", ".chat_mute", function () {
+      if (confirm("{{_('Mute this user and delete all messages?')}}")) {
         var elt = $(this);
         $.ajax({
-          url: "{{ url('delete_chat_message') }}",
+          url: "{{ url('mute_chat_message') }}",
           type: 'post',
           data: {
             message: elt.attr('value'),
           },
           dataType: 'json',
-          success: function(data){
-            var $block = elt.parent();
-            if ($block.parent().find('.body-block').length > 1) {
-              $block.remove();
-            }
-            else {
-              elt.closest('li').remove();
-            }
+          success: function (data) {
+            window.location.reload();
           },
-          fail: function(data) {
+          fail: function (data) {
             console.log('Fail to delete');
           },
         });
-      });
-      $(document).on("click", ".chat_mute", function() {
-        if (confirm("{{_('Mute this user and delete all messages?')}}")) {
-          var elt = $(this);
-          $.ajax({
-            url: "{{ url('mute_chat_message') }}",
-            type: 'post',
-            data: {
-              message: elt.attr('value'),
-            },
-            dataType: 'json',
-            success: function(data){
-              window.location.reload();
-            },
-            fail: function(data) {
-              console.log('Fail to delete');
-            },
-          });
-        }
-      });
+      }
+    });
     {% endif %}
 
     $("#chat-log").show();
-    $("#chat-log").change(function() {
+    $("#chat-log").change(function () {
       $('#chat-log').scrollTop($('#chat-log')[0].scrollHeight);
     });
 
     $('#chat-input').focus();
 
-    $('#chat-input').keydown(function(e) {
+    $('#chat-input').keydown(function (e) {
       if (e.keyCode === 13) {
         if (e.ctrlKey || e.shiftKey) {
           insert_char_after_cursor(this, "\n");
@@ -487,20 +488,20 @@
       tooltip.classList.toggle('shown');
       popper.update();
     }
-    $('#emoji-button').on('click', function(e) {
+    $('#emoji-button').on('click', function (e) {
       e.preventDefault();
       e.stopPropagation();
       toggleEmoji();
     });
 
     // Đóng bảng emoji khi click bất kỳ chỗ nào trên màn hình
-    document.addEventListener("click", function(e) {
+    document.addEventListener("click", function (e) {
       if (!tooltip.contains(e.target)) {
         tooltip.classList.remove('shown'); // Ẩn bảng emoji
       }
     });
 
-    $('emoji-picker').on('emoji-click', function(e) {
+    $('emoji-picker').on('emoji-click', function (e) {
       var $chat = $('#chat-input').get(0);
       insert_char_after_cursor($chat, e.detail.unicode);
       $chat.focus();
@@ -508,7 +509,7 @@
 
     register_click_space();
 
-    document.addEventListener('keydown', function(e) {
+    document.addEventListener('keydown', function (e) {
       if (e.keyCode === 27 && $('.tooltip').hasClass('shown')) {
         toggleEmoji();
       }
@@ -535,28 +536,28 @@
       templateResult: function (data, container) {
         return $('<span>')
           .append($('<img>', {
-          'class': 'user-search-image', src: data.gravatar_url,
-          width: 24, height: 24
-        }))
-          .append($('<span>', {'class': data.display_rank + ' user-search-name'}).text(data.text))
-          .append($('<a>', {href: '/user/' + data.text, 'class': 'user-redirect'})
-            .append($('<i>', {'class': 'fa fa-mail-forward'}))
+            'class': 'user-search-image', src: data.gravatar_url,
+            width: 24, height: 24
+          }))
+          .append($('<span>', { 'class': data.display_rank + ' user-search-name' }).text(data.text))
+          .append($('<a>', { href: '/user/' + data.text, 'class': 'user-redirect' })
+            .append($('<i>', { 'class': 'fa fa-mail-forward' }))
             .mouseover(function () {
-            in_user_redirect = true;
-          }).mouseout(function () {
-            in_user_redirect = false;
-          }));
+              in_user_redirect = true;
+            }).mouseout(function () {
+              in_user_redirect = false;
+            }));
       }
     }).on('select2:selecting', function () {
       return !in_user_redirect;
     });
 
-    $("#chat-input").on("keyup", function() {
+    $("#chat-input").on("keyup", function () {
       $("#chat-input").scrollTop($("#chat-input")[0].scrollHeight);
     });
 
     // https://stackoverflow.com/questions/42121565/detecting-class-change-without-setinterval
-    if (typeof(MutationObserver) !== undefined) {
+    if (typeof (MutationObserver) !== undefined) {
       var observer = new MutationObserver(function (event) {
         if (!document['hidden'] && window.unread_message > 0) {
           update_last_seen();
@@ -577,7 +578,7 @@
     register_setting(false);
     color_selected_room();
 
-    $('#chat-input').on('input', function() {
+    $('#chat-input').on('input', function () {
       if (this.scrollHeight > this.clientHeight) {
         this.style.height = (this.scrollHeight) + 'px';
         $(this).css('border-radius', '30px');
