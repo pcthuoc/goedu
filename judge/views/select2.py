@@ -136,47 +136,35 @@ class CommentSelect2View(Select2View):
         return Comment.objects.filter(page__icontains=self.term)
 
 
+
 class UserSearchSelect2View(BaseListView):
     paginate_by = 20
 
     def get_queryset(self):
-        return _get_user_queryset(self.term)
+        return _get_user_queryset(self.term).filter(is_unlisted=False)
 
     def get(self, request, *args, **kwargs):
         self.request = request
         self.kwargs = kwargs
-        self.term = kwargs.get("term", request.GET.get("term", ""))
-        self.gravatar_size = request.GET.get("gravatar_size", 128)
-        self.gravatar_default = request.GET.get("gravatar_default", None)
+        self.term = kwargs.get('term', request.GET.get('term', ''))
+        self.gravatar_size = request.GET.get('gravatar_size', 128)
+        self.gravatar_default = request.GET.get('gravatar_default', None)
 
-        self.object_list = self.get_queryset().values_list(
-            "pk",
-            "user__username",
-            "user__email",
-            "display_rank",
-            "username_display_override",
-        )
+        self.object_list = self.get_queryset().values_list('pk', 'user__username', 'user__email', 'display_rank',
+                                                           'username_display_override')
 
         context = self.get_context_data()
 
-        return JsonResponse(
-            {
-                "results": [
-                    {
-                        "text": username_override or username,
-                        "id": username,
-                        "gravatar_url": gravatar(
-                            email, self.gravatar_size, self.gravatar_default
-                        ),
-                        "display_rank": display_rank,
-                    }
-                    for pk, username, email, display_rank, username_override in context[
-                        "object_list"
-                    ]
-                ],
-                "more": context["page_obj"].has_next(),
-            }
-        )
+        return JsonResponse({
+            'results': [
+                {
+                    'text': username_override or username,
+                    'id': username,
+                    'gravatar_url': gravatar(email, self.gravatar_size, self.gravatar_default),
+                    'display_rank': display_rank,
+                } for pk, username, email, display_rank, username_override in context['object_list']],
+            'more': context['page_obj'].has_next(),
+        })
 
     def get_name(self, obj):
         return str(obj)
@@ -212,8 +200,11 @@ class ChatUserSearchSelect2View(UserSearchSelect2View):
         if not self.request.user.is_authenticated:
             raise Http404()
         pk, username, email, display_rank, profile_image = user_tuple
+        print(":testdemo")
+        print(self.request.profile.id)
+        print(pk)
         return {
-            "text": username,
+            "text": encrypt_url(self.request.profile.id, pk),
             "id": encrypt_url(self.request.profile.id, pk),
             "gravatar_url": gravatar(
                 None,

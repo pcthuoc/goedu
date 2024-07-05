@@ -15,6 +15,8 @@ fernet = Fernet(secret_key)
 
 
 def encrypt_url(creator_id, other_id):
+    print(creator_id)
+    print(other_id)
     message = str(creator_id) + "_" + str(other_id)
     return fernet.encrypt(message.encode()).decode()
 

@@ -548,8 +548,10 @@
               in_user_redirect = false;
             }));
       }
-    }).on('select2:selecting', function () {
-      return !in_user_redirect;
+    }).on('select2:selecting', function (e) {
+    var encryptedId = e.params.args.data.id;
+    console.log("Selected ID:", encryptedId); // In ra giá trị ID đã mã hóa
+    return !in_user_redirect;
     });
 
     $("#chat-input").on("keyup", function () {

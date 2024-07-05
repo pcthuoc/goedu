@@ -488,6 +488,8 @@ def get_or_create_room(request):
         return HttpResponseBadRequest("Missing 'other' parameter.")
 
     request_id, other_id = decrypt_url(decrypted_other_id)
+    print(request_id)
+    print(other_id)
     if request_id is None or other_id is None:
         return HttpResponseBadRequest("Invalid 'other' parameter or mismatched IDs.")
 
