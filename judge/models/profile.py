@@ -309,8 +309,6 @@ class Profile(models.Model):
         verbose_name=_("display name override"),
         help_text=_("Name displayed in place of username"),
     )
-    rank_color = models.CharField(max_length=20, verbose_name=_("rank color"), default="other")
-    
     @cached_property
     def _cached_info(self):
         return _get_basic_info(self.id)
