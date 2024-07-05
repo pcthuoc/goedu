@@ -232,7 +232,17 @@
             {% endfor %}
         </ul>
 
+
         <span id="user-links">
+            {% if request.user.is_authenticated %}
+            <a id="chat-icon" href="{{ url('chat', '') }}" class="fab fa-weixin navbar-icon" aria-hidden="true" style="font-size: 22.5px; margin-right: 10px;" title="{{_('Chat')}}">
+                {% set unread_chat = request.profile.count_unread_chat_boxes %}
+                {% if unread_chat %}
+                    <sub class="unread_boxes">{{unread_chat}}</sub>
+                {% endif %}
+            </a>
+            {% endif %}
+            
             <a href=
             {% if request.resolver_match.view_name == "problem_detail" and problem %}
                     "{{ url('new_problem_ticket', problem.code) }}"

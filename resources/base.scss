@@ -222,6 +222,36 @@ hr {
 .popper-arrow {
     top: -4px;
 }
+.user-links {
+    display: flex;
+    align-items: center;
+}
+
+.chat-icon-wrapper {
+    margin-right: 10px; /* Điều chỉnh khoảng cách giữa các phần tử */
+}
+
+#chat-icon {
+    font-size: 22.5px;
+    position: relative;
+}
+
+.unread_boxes {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    background-color: red;
+    color: white;
+    border-radius: 50%;
+    padding: 2px 5px;
+    font-size: 12px;
+}
+
+a[id^="flag_"] {
+    margin-right: 10px;
+    margin-top: 4px;
+}
+
 
 #content {
     margin: 50px 5% 0 5%; /* 10% lề trái và 10% lề phải */
