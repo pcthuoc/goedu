@@ -50,6 +50,7 @@
         <link rel="stylesheet" type="text/css" href="{{ static('libs/clipboard/tooltip.css') }}">
         <link rel="stylesheet" type="text/css" href="{{ static('libs/select2/select2.css') }}">
         <link rel="stylesheet" type="text/css" href="{{ static('icofont/icofont.min.css') }}">
+        <link rel="stylesheet" type="text/css" href="{{ static('libs/featherlight/featherlight.min.css') }}">
     {% endcompress %}
     <script src="https://unpkg.com/@popperjs/core@2/dist/umd/popper.min.js"></script>
 
@@ -79,9 +80,11 @@
         <script src="{{ static('libs/jquery.unveil.js') }}"></script>
         <script src="{{ static('libs/moment.js') }}"></script>
         <script src="{{ static('libs/select2/select2.js') }}"></script>
+
         {% include "extra_js.html" %}
         <script src="{{ static('common.js') }}"></script>
         <script src="{{ static('event.js') }}"></script>
+        <script type="text/javascript" src="{{ static('libs/featherlight/featherlight.min.js') }}"></script>
         <script>
             moment.locale('{{ LANGUAGE_CODE }}');
             set_date_locale('{{ LANGUAGE_CODE }}');

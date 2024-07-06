@@ -120,6 +120,10 @@ msgid "%d comment successfully hidden."
 msgid_plural "%d comments successfully hidden."
 msgstr[0] "%d bình luận đã được ẩn."
 
+#: templates/chat/chat.html:90
+msgid "Enter your message"
+msgstr "Nhập tin nhắn"
+
 #: judge/admin/comments.py:43
 msgid "Hide comments"
 msgstr "Ẩn bình luận"

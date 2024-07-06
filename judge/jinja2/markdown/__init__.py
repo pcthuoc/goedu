@@ -106,6 +106,9 @@ def add_table_class(text):
 
 
 @registry.filter
+def markdown1(value, lazy_load=False):
+    return _markdown(value, lazy_load)
+@registry.filter
 def markdown(text, style, math_engine=None, lazy_load=False, strip_paragraphs=False):
     styles = settings.MARKDOWN_STYLES.get(style, settings.MARKDOWN_DEFAULT_STYLE)
     if styles.get("safe_mode", True):

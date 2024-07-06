@@ -82,7 +82,7 @@ $navbar_height_mobile: 36px;
 }
 
 .selected-status-row {
-    background-color: lightgray;
+    background-color: #E3F2FD;
 }
 
 .status_last_message {
@@ -229,18 +229,18 @@ $navbar_height_mobile: 36px;
     color: black;
 }
 
-.message-text-myself {
-    background: rgb(0, 132, 255);
+ {
+    background: rgb(88 99 108);
     color: white;
 }
 
 .chat-input-icon {
     color: white;
-    background-color: #3c8262;
+    background-color: #263238;
 }
 
 .chat-input-icon:hover {
-    background: #57b28b;
+    background: #37474F ;
 }
 
 .chat {

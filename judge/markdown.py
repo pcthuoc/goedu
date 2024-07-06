@@ -115,15 +115,7 @@ def _wrap_images_with_featherlight(soup):
     return soup
 
 
-def _open_external_links_in_new_tab(soup):
-    domain = settings.SITE_DOMAIN.lower()
-    for a in soup.findAll("a", href=True):
-        href = a["href"]
-        if href.startswith("http://") or href.startswith("https://"):
-            link_domain = urlparse(href).netloc.lower()
-            if link_domain != domain:
-                a["target"] = "_blank"
-    return soup
+
 
 
 def markdown(value, lazy_load=False):
@@ -142,7 +134,6 @@ def markdown(value, lazy_load=False):
         soup = _wrap_img_iframe_with_lazy_load(soup)
 
     soup = _wrap_images_with_featherlight(soup)
-    soup = _open_external_links_in_new_tab(soup)
     html = str(soup)
 
     return '<div class="md-typeset content-description">%s</div>' % html

@@ -413,7 +413,6 @@ function populateCopyButton() {
         });
     });
 }
-
 function register_copy_clipboard($elements, callback) {
     $elements.on('paste', function(event) {
         const items = (event.clipboardData || event.originalEvent.clipboardData).items;
@@ -422,44 +421,62 @@ function register_copy_clipboard($elements, callback) {
             if (item.kind === 'file' && item.type.indexOf('image') !== -1) {
                 const blob = item.getAsFile();
                 const formData = new FormData();
-                formData.append('image', blob);
+                formData.append('markdown-image-upload', blob); // Đảm bảo tên trường khớp với endpoint Django
 
                 $(this).prop('disabled', true);
 
                 $.ajax({
-                    url: '/pagedown/image-upload/',
+                    url: '/widgets/martor/upload-image', // URL này phải khớp với endpoint trong Django
                     type: 'POST',
                     data: formData,
                     processData: false,
                     contentType: false,
                     success: function(data) {
-                        // Assuming the server returns the URL of the image
-                        const imageUrl = data.url;
-                        const editor = $(event.target); // Get the textarea where the event was triggered
+                        console.log(data); // Log dữ liệu trả về từ server để kiểm tra
+                        
+                        // Kiểm tra xem dữ liệu trả về có phải là một đối tượng hay không
+                        let parsedData;
+                        if (typeof data === 'string') {
+                            try {
+                                parsedData = JSON.parse(data);
+                            } catch (e) {
+                                console.error('Error parsing JSON:', e);
+                                alert('Có lỗi xảy ra khi tải lên hình ảnh.');
+                                return;
+                            }
+                        } else {
+                            parsedData = data;
+                        }
+
+                        const imageUrl = parsedData.link; // Sử dụng trường "link" từ phản hồi của server
+                        const editor = $(event.target); // Lấy textarea nơi sự kiện được kích hoạt
                         let currentMarkdown = editor.val();
-                        const markdownImageText = '![](' + imageUrl + ')'; // Markdown for an image
+                        const markdownImageText = `![](${imageUrl})`; // Markdown cho hình ảnh
                         
                         if (currentMarkdown) currentMarkdown += "\n";
                         currentMarkdown += markdownImageText;
 
                         editor.val(currentMarkdown);
-                        callback?.();
+                        if (callback) {
+                            callback();
+                        }
                     },
                     error: function() {
-                        alert('There was an error uploading the image.');
+                        alert('Có lỗi xảy ra khi tải lên hình ảnh.');
                     },
-                    complete: () => {
-                        // Re-enable the editor
+                    complete: function() {
+                        // Kích hoạt lại phần tử nhập liệu
                         $(this).prop('disabled', false).focus();
-                    }
+                    }.bind(this)
                 });
                 
-                // We only handle the first image in the clipboard data
+                // Chỉ xử lý hình ảnh đầu tiên trong dữ liệu clipboard
                 break;
             }
         }
     });
 }
+
 
 function activateBlogBoxOnClick() {
     $('.blog-box').on('click', function () {

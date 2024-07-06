@@ -24,7 +24,7 @@
           </a>
         {% endif %}
         <div class="message-text message-text-other" id="message-text-{{ message.id }}">
-          {{message.body }}
+          {{message.body|markdown1(lazy_load=False)|reference|str|safe }}
         </div>
       </div>
     </span>
