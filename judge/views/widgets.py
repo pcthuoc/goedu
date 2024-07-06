@@ -165,7 +165,7 @@ def martor_image_uploader(request):
         return HttpResponseBadRequest("Invalid request")
 
     image = request.FILES["markdown-image-upload"]
-    if request.user.is_staff or request.user.has_perm("judge.upload_image_server"):
+    if request.user.is_authenticated  :
         data = django_uploader(image)
     else:
         data = imgur_uploader(image)
